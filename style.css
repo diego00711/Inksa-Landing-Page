@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    box-sizing: border-box; /* Para garantir que padding e border sejam incluídos na largura/altura total */
+}
+.container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+.logo-container {
+    margin-bottom: 30px;
+}
+.logo {
+    max-width: 150px; /* Ajuste o tamanho máximo da sua logo aqui */
+    height: auto;
+}
+h1 {
+    color: #007bff; /* Exemplo de cor primária */
+    margin-bottom: 30px;
+    font-size: 2em; /* Tamanho do título */
+}
+p {
+    font-size: 1.1em;
+    margin-bottom: 40px;
+}
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+.option-button {
+    background-color: #007bff; /* Exemplo de cor primária */
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none; /* Remove sublinhado para links */
+    display: block; /* Faz o botão preencher a célula da grade */
+    box-sizing: border-box;
+}
+.option-button:hover {
+    background-color: #0056b3; /* Tonalidade mais escura ao passar o mouse */
+    transform: translateY(-2px); /* Efeito sutil de levantar */
+}
+
+/* Ajustes responsivos para telas maiores */
+@media (min-width: 600px) {
+    .options-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Botões lado a lado em telas maiores */
+    }
+}
