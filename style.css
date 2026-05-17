@@ -106,6 +106,31 @@ p {
     transition: transform 0.3s ease; /* Transição suave para a seta */
 }
 
+/* Botão Confirmar */
+#btn-confirmar {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto 0;
+    padding: 15px 20px;
+    background-color: #FF6F00;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#btn-confirmar:hover {
+    background-color: #E65C00;
+}
+
+#btn-confirmar:active {
+    transform: scale(0.98);
+}
+
 /* Ajustes responsivos */
 @media (min-width: 600px) {
     /* Sem necessidade de grid columns para o select, mas pode ajustar a largura máxima */
