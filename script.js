@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             selectSelected.innerHTML = this.textContent + ' <i class="fas fa-chevron-down arrow"></i>';
             selectItems.classList.add('select-hide');
             selectSelected.classList.remove('select-arrow-active');
+
+            options.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
         });
     });
 

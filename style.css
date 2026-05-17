@@ -98,8 +98,19 @@ p {
 }
 
 .select-items div:hover {
-    background-color: #FFEEE0; /* Laranja bem claro no hover do item */
-    color: #FF6F00; /* Cor do texto laranja no hover */
+    background-color: #FFEEE0;
+    color: #FF6F00;
+}
+
+.select-items div.selected {
+    background-color: #FF6F00;
+    color: white;
+    font-weight: bold;
+}
+
+.select-items div.selected:hover {
+    background-color: #E65C00;
+    color: white;
 }
 
 .arrow {
