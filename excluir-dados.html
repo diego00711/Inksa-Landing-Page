@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Dados - Inksa Delivery</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 3px solid #FF6B35;
+        }
+        header h1 { color: #FF6B35; font-size: 2.5em; margin-bottom: 10px; }
+        .update-date { color: #666; font-size: 0.9em; margin-top: 10px; }
+        section { margin: 40px 0; }
+        h2 {
+            color: #FF6B35;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        h3 { color: #333; font-size: 1.3em; margin: 25px 0 15px 0; }
+        p { margin-bottom: 15px; text-align: justify; }
+        ul { margin: 15px 0 15px 30px; }
+        li { margin-bottom: 10px; }
+        .contact-box {
+            background: #fff7f0;
+            padding: 20px 25px;
+            border-left: 4px solid #FF6B35;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        .contact-box strong { color: #FF6B35; }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px 25px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        a { color: #FF6B35; text-decoration: none; font-weight: 600; }
+        a:hover { text-decoration: underline; }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 60px;
+        }
+        .btn-back {
+            display: inline-block;
+            background: #FF6B35;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .btn-back:hover { background: #e85a25; text-decoration: none; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #fff7f0;
+            color: #FF6B35;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8em; }
+            h2 { font-size: 1.4em; }
+            .container { padding: 15px; }
+            table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Excluir Dados Específicos</h1>
+            <p><strong>Inksa Delivery</strong></p>
+            <p class="update-date">Aplica-se a: Inksa Delivery (cliente), Inksa Restaurante e Inksa Entregador</p>
+        </header>
+
+        <section>
+            <h2>O que esta página oferece</h2>
+            <p>Aqui você solicita a exclusão de <strong>tipos específicos de dados</strong> sem precisar fechar
+            sua conta inteira. Útil quando você quer continuar usando a Inksa mas remover, por exemplo,
+            o histórico de pedidos antigos, fotos enviadas ou avaliações que escreveu.</p>
+            <p>Se sua intenção é excluir a conta inteira e todos os dados, vá para
+            <a href="/excluir-conta.html">Excluir Minha Conta</a>.</p>
+        </section>
+
+        <section>
+            <h2>Dados que você pode pedir para excluir</h2>
+            <table>
+                <tr>
+                    <th>Tipo de dado</th>
+                    <th>Sua conta continua?</th>
+                </tr>
+                <tr>
+                    <td>Endereços salvos</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Foto de perfil</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Avaliações que você fez de restaurantes</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Histórico de pedidos antigos (mais de 90 dias)</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Histórico de chats com suporte</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Preferências e configurações pessoais</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Token de notificação push</td>
+                    <td>Sim (você para de receber notificações)</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Dados que NÃO podem ser excluídos individualmente</h2>
+            <ul>
+                <li><strong>Dados de pedidos fiscais</strong> — preservados por 5 anos por obrigação legal</li>
+                <li><strong>Comprovantes de pagamento</strong> — preservados por 5 anos (Receita Federal)</li>
+                <li><strong>Logs de segurança e antifraude</strong> — 6 meses, conforme política de segurança</li>
+            </ul>
+            <p>Se quiser apagar TUDO, use <a href="/excluir-conta.html">Excluir Minha Conta</a>.</p>
+        </section>
+
+        <section>
+            <h2>Como solicitar</h2>
+            <p>Envie um e-mail para <a href="mailto:suporte@inksadelivery.com.br">suporte@inksadelivery.com.br</a>
+            com o assunto <strong>"Excluir dados específicos"</strong> contendo:</p>
+            <ul>
+                <li>Seu nome completo</li>
+                <li>E-mail cadastrado</li>
+                <li>App que você usa (Cliente, Restaurante ou Entregador)</li>
+                <li>Lista exata dos tipos de dados que quer remover</li>
+            </ul>
+            <div class="info-box">
+                <p><strong>Importante:</strong> a solicitação precisa partir do e-mail cadastrado na conta.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Prazo</h2>
+            <p>Confirmamos a solicitação em até <strong>2 dias úteis</strong> e processamos em até
+            <strong>15 dias corridos</strong>, conforme previsto pela LGPD.</p>
+        </section>
+
+        <div class="contact-box">
+            <p><strong>Contato direto:</strong></p>
+            <p>E-mail: <a href="mailto:suporte@inksadelivery.com.br">suporte@inksadelivery.com.br</a></p>
+            <p>Site: <a href="https://www.inksadelivery.com.br">www.inksadelivery.com.br</a></p>
+            <p>Política de Privacidade: <a href="/privacidade.html">/privacidade</a></p>
+        </div>
+
+        <a href="/" class="btn-back">← Voltar para a página inicial</a>
+
+        <footer>
+            <p>© 2026 Inksa Delivery - Todos os direitos reservados</p>
+        </footer>
+    </div>
+</body>
+</html>
