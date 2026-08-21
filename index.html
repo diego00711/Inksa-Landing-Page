@@ -221,6 +221,31 @@
   }
   .cinza .numero { background: var(--fundo-2); }
 
+  /* Prestação de contas ------------------------------------------------- */
+  .barra-contas {
+    display: flex; margin-top: 2.4rem; height: 3.1rem;
+    border-radius: 4px; overflow: hidden; background: var(--fundo-3);
+  }
+  .fatia { display: block; width: 0; transition: width .9s cubic-bezier(.22,.8,.3,1); }
+  @media (prefers-reduced-motion: reduce) { .fatia { transition: none; } }
+  /* Cores fixas, não as variáveis do tema: no escuro --brasa e --brasa-viva
+     chegam quase no mesmo tom e as fatias do parceiro e do entregador viravam
+     uma faixa só. Num gráfico, duas fatias iguais é o mesmo que nenhum
+     gráfico. Estes três tons se separam em fundo claro e escuro. */
+  .f-parceiro   { background: #E8590C; }
+  .f-entregador { background: #FFB067; }
+  .f-inksa      { background: #7A8F99; }
+  .ponto {
+    display: inline-block; width: .58rem; height: .58rem; border-radius: 2px;
+    margin-right: .38rem; vertical-align: baseline;
+  }
+  .numero span b { color: var(--tinta); font-weight: 700; }
+  .linque {
+    color: var(--brasa); font-weight: 600; text-decoration: none;
+    border-bottom: 1px solid currentColor; padding-bottom: 1px;
+  }
+  .linque:hover { color: var(--brasa-esc); }
+
   .revela { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s ease; }
   .revela.vis { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) { .revela { opacity: 1; transform: none; } }
@@ -586,6 +611,59 @@
   </div>
 </section>
 
+<!-- Prestação de contas. Mesma trava do contador: nasce escondida e só entra
+     quando tem pedido suficiente pra porcentagem significar alguma coisa.
+     As três fatias somam exatamente o que o cliente pagou, porque a da Inksa
+     é calculada por diferença lá no servidor — conta que não fecha numa
+     página destas é pior que não ter a página. -->
+<section class="faixa" id="secao-contas" hidden>
+  <div class="dentro">
+    <p class="rotulo revela">Prestação de contas</p>
+    <h2 class="revela">Para onde foi<br>cada real.</h2>
+    <p class="grande apagado revela" style="margin-top:1.3rem;max-width:56ch">
+      Não é projeção nem exemplo: é a soma de <strong id="t-pedidos">0</strong>
+      pedidos já entregues, do primeiro até o de ontem.
+    </p>
+
+    <div class="barra-contas revela" role="img" id="t-barra"
+         aria-label="Divisão do dinheiro dos pedidos">
+      <span class="fatia f-parceiro" id="t-b-parceiro"></span>
+      <span class="fatia f-entregador" id="t-b-entregador"></span>
+      <span class="fatia f-inksa" id="t-b-inksa"></span>
+    </div>
+
+    <div class="numeros">
+      <div class="numero revela">
+        <strong id="t-parceiros" class="conta">R$ 0</strong>
+        <span><i class="ponto f-parceiro"></i> foi para os parceiros
+          · <b id="t-pct-parceiros">0</b>%</span>
+      </div>
+      <div class="numero revela">
+        <strong id="t-entregadores" class="conta">R$ 0</strong>
+        <span><i class="ponto f-entregador"></i> foi para os entregadores
+          · <b id="t-pct-entregadores">0</b>%</span>
+      </div>
+      <div class="numero revela">
+        <strong id="t-inksa" class="conta">R$ 0</strong>
+        <span><i class="ponto f-inksa"></i> ficou com a Inksa
+          · <b id="t-pct-inksa">0</b>%</span>
+      </div>
+    </div>
+
+    <p class="apagado revela" style="margin-top:1.6rem;max-width:62ch;font-size:.92rem">
+      Da parte da Inksa ainda saem a taxa do meio de pagamento, os servidores e
+      o imposto — não é lucro. E pedido pago em dinheiro o cliente paga na mão
+      do entregador: aparece nesta conta porque foi entregue, mas esse dinheiro
+      não passa pela conta da empresa.
+    </p>
+    <p class="apagado revela" id="t-doado"
+       style="margin-top:.7rem;max-width:62ch;font-size:.92rem" hidden></p>
+    <p class="revela" style="margin-top:1.4rem">
+      <a class="linque" href="/dia-i">Ver a prestação de contas do Dia I →</a>
+    </p>
+  </div>
+</section>
+
 <section class="faixa">
   <div class="dentro">
     <p class="rotulo revela">O sonho</p>
@@ -810,14 +888,80 @@
       } else { dispara(); }
     }
 
+    var API = "https://inksa-auth-flask-dev.onrender.com";
+
     if (secaoNum && "fetch" in window) {
-      fetch("https://inksa-auth-flask-dev.onrender.com/api/public/numeros")
+      fetch(API + "/api/public/numeros")
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
           /* Sem resposta, resposta ruim ou publicar:false — a seção continua
              fora da página. Silêncio é melhor que um contador escrito "0". */
           if (d && d.publicar && d.total > 0) mostraNumeros(d);
         })
+        .catch(function () {});
+    }
+
+    /* Prestação de contas ---------------------------------------------- */
+    var secaoContas = document.getElementById("secao-contas");
+
+    function dinheiro(v) {
+      return "R$ " + Math.round(v).toLocaleString("pt-BR");
+    }
+
+    function poe(id, txt) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = txt;
+    }
+
+    function mostraContas(d) {
+      secaoContas.hidden = false;
+      secaoContas.querySelectorAll(".revela").forEach(function (el) { el.classList.add("vis"); });
+
+      poe("t-pedidos", d.pedidos.toLocaleString("pt-BR"));
+      poe("t-parceiros", dinheiro(d.parceiros));
+      poe("t-entregadores", dinheiro(d.entregadores));
+      poe("t-inksa", dinheiro(d.inksa));
+      poe("t-pct-parceiros", String(d.pct_parceiros).replace(".", ","));
+      poe("t-pct-entregadores", String(d.pct_entregadores).replace(".", ","));
+      poe("t-pct-inksa", String(d.pct_inksa).replace(".", ","));
+
+      var barra = document.getElementById("t-barra");
+      if (barra) {
+        barra.setAttribute("aria-label",
+          "De cada real: " + d.pct_parceiros + "% para os parceiros, " +
+          d.pct_entregadores + "% para os entregadores, " +
+          d.pct_inksa + "% para a Inksa.");
+      }
+
+      if (d.doado > 0) {
+        var el = document.getElementById("t-doado");
+        if (el) {
+          el.textContent = "Fora disso, " + dinheiro(d.doado) +
+            " já foram doados no Dia I — o dia em que o lucro da Inksa vai inteiro para uma causa da cidade.";
+          el.hidden = false;
+        }
+      }
+
+      var pinta = function () {
+        /* As larguras entram DEPOIS de a seção aparecer, senão a transição
+           não roda: o navegador não anima de 0 pra 0. */
+        document.getElementById("t-b-parceiro").style.width = d.pct_parceiros + "%";
+        document.getElementById("t-b-entregador").style.width = d.pct_entregadores + "%";
+        document.getElementById("t-b-inksa").style.width = d.pct_inksa + "%";
+      };
+
+      if ("IntersectionObserver" in window) {
+        var ob2 = new IntersectionObserver(function (ents) {
+          if (ents[0].isIntersecting) { requestAnimationFrame(pinta); ob2.disconnect(); }
+        }, { rootMargin: "0px 0px -20% 0px" });
+        ob2.observe(secaoContas);
+      } else { pinta(); }
+    }
+
+    if (secaoContas && "fetch" in window) {
+      fetch(API + "/api/public/transparencia")
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && d.publicar) mostraContas(d); })
         .catch(function () {});
     }
   })();
