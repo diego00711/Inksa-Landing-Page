@@ -946,6 +946,51 @@
 
     var API = "https://inksa-auth-flask-dev.onrender.com";
 
+    /* Medição de visita --------------------------------------------------
+       Própria, sem serviço de terceiro: esta página promete que os dados são
+       da Inksa, e mandar o rastro de cada visitante pra fora contradiz isso
+       por conveniência. Não guarda IP nem nada que identifique alguém — só um
+       id sorteado que fica no navegador, pra separar quem voltou de quem
+       chegou agora.
+
+       O que interessa de verdade é a ORIGEM: sem ela não dá pra saber se o
+       post do Instagram ou o cafezinho do influenciador trouxeram gente. */
+    (function () {
+      /* Só no domínio de verdade. Sem isto, cada vez que eu abro o arquivo
+         local pra conferir o layout, entra uma visita falsa na conta. */
+      if (!/inksadelivery\.com\.br$/.test(location.hostname)) return;
+      try {
+        var id = localStorage.getItem("inksa_v");
+        if (!id) {
+          id = (crypto.randomUUID && crypto.randomUUID()) ||
+               "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+                 var r = Math.random() * 16 | 0;
+                 return (c === "x" ? r : (r & 3 | 8)).toString(16);
+               });
+          localStorage.setItem("inksa_v", id);
+        }
+        var p = new URLSearchParams(location.search);
+        var vindoDe = "";
+        try { vindoDe = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+        /* Referência do próprio site não é origem: é a pessoa andando pela
+           página. Contar isso transformaria navegação interna em visita nova. */
+        if (/inksadelivery\.com\.br$/.test(vindoDe)) vindoDe = "";
+
+        fetch(API + "/api/public/visita", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            anon: id,
+            caminho: location.pathname,
+            origem: vindoDe,
+            campanha: p.get("utm_source") || p.get("ref") || "",
+            celular: window.matchMedia("(max-width: 768px)").matches,
+          }),
+          keepalive: true,
+        }).catch(function () {});
+      } catch (e) { /* contador quebrado nunca pode quebrar o site */ }
+    })();
+
     if (secaoNum && "fetch" in window) {
       fetch(API + "/api/public/numeros")
         .then(function (r) { return r.ok ? r.json() : null; })
