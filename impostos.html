@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imposto e formalização — Inksa Delivery</title>
+<meta name="description" content="O que a Inksa faz e o que não faz em relação a imposto, e o que muda entre receber como pessoa física ou como MEI.">
+<meta name="theme-color" content="#DD5209">
+<link rel="icon" href="assets/logo.jpg">
+<style>
+  :root {
+    --brasa: #DD5209;
+    --brasa-veu: #FFF1E8;
+    --tinta: #1C1917;
+    --musgo: #6B615A;
+    --linha: #E7E2DD;
+    --papel: #FFFFFF;
+    --fundo: #F6F4F1;
+    --alerta: #92400E;
+    --alerta-veu: #FEF6E7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.68; color: var(--tinta); background: var(--fundo);
+    -webkit-font-smoothing: antialiased;
+  }
+  .folha { max-width: 46rem; margin: 0 auto; background: var(--papel); min-height: 100vh; }
+  .dentro { padding: 0 1.6rem; }
+
+  header { padding: 2.6rem 1.6rem 2rem; border-bottom: 3px solid var(--brasa); }
+  header a.voltar {
+    display: inline-block; margin-bottom: 1.1rem; color: var(--brasa);
+    text-decoration: none; font-size: .9rem; font-weight: 600;
+  }
+  header h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.15; color: var(--brasa); }
+  header p.sub { margin-top: .7rem; color: var(--musgo); font-size: 1.02rem; }
+  .data { margin-top: .9rem; font-size: .82rem; color: #9A918B; }
+
+  h2 {
+    margin: 2.6rem 0 .6rem; font-size: 1.22rem; line-height: 1.3;
+    padding-top: 1.6rem; border-top: 1px solid var(--linha);
+  }
+  h2:first-of-type { border-top: 0; padding-top: 0; }
+  h3 { margin: 1.5rem 0 .4rem; font-size: 1rem; }
+  p { margin: .8rem 0; }
+  ul { margin: .8rem 0 .8rem 1.15rem; }
+  li { margin: .45rem 0; }
+  strong { font-weight: 700; }
+  a { color: var(--brasa); }
+
+  .aviso {
+    margin: 1.6rem 0; padding: 1.1rem 1.2rem; border-radius: 8px;
+    background: var(--alerta-veu); border: 1px solid #F5D9A8; color: var(--alerta);
+    font-size: .95rem;
+  }
+  .aviso b { display: block; margin-bottom: .3rem; }
+
+  .caixa {
+    margin: 1.2rem 0; padding: 1.1rem 1.2rem; border-radius: 8px;
+    background: var(--brasa-veu); border: 1px solid #F6D5BE;
+  }
+  .caixa p:first-child { margin-top: 0; }
+  .caixa p:last-child { margin-bottom: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .95rem; }
+  th, td { text-align: left; padding: .7rem .6rem; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  th { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--musgo); }
+  td:first-child { font-weight: 600; width: 34%; }
+  .rolagem { overflow-x: auto; }
+
+  .passos { counter-reset: p; list-style: none; margin-left: 0; }
+  .passos li { counter-increment: p; position: relative; padding-left: 2.3rem; margin: .9rem 0; }
+  .passos li::before {
+    content: counter(p); position: absolute; left: 0; top: .05rem;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: var(--brasa); color: #fff; font-size: .82rem; font-weight: 700;
+    display: grid; place-items: center;
+  }
+
+  footer {
+    margin-top: 3rem; padding: 1.8rem 1.6rem 2.6rem;
+    border-top: 1px solid var(--linha); font-size: .88rem; color: var(--musgo);
+  }
+  footer a { display: inline-block; margin-right: 1.1rem; }
+</style>
+</head>
+<body>
+<div class="folha">
+
+<header>
+  <a class="voltar" href="/">← inksadelivery.com.br</a>
+  <h1>Imposto e formalização</h1>
+  <p class="sub">
+    Para quem vende ou entrega pela Inksa — inclusive quem trabalha de casa e
+    recebe numa conta de pessoa física.
+  </p>
+  <p class="data">Atualizado em 24 de agosto de 2026</p>
+</header>
+
+<div class="dentro">
+
+  <div class="aviso">
+    <b>Isto é orientação, não é consultoria contábil.</b>
+    A Inksa não é escritório de contabilidade e não pode responder pela sua
+    situação: cada caso depende do que você vende, de quanto fatura e da sua
+    cidade. Um contador custa pouco perto do que um erro custa. O Sebrae
+    atende de graça.
+  </div>
+
+  <h2>1. O que a Inksa faz — e o que ela não faz</h2>
+
+  <p>
+    Essa é a parte que só nós podemos responder, e é a que mais gera
+    mal-entendido. Então vai direto:
+  </p>
+
+  <div class="rolagem">
+    <table>
+      <tr>
+        <th>A Inksa</th>
+        <th>Como funciona</th>
+      </tr>
+      <tr>
+        <td>Não desconta imposto</td>
+        <td>
+          O repasse cai inteiro na sua chave PIX. Nada é retido na fonte.
+          A obrigação de declarar e recolher é de quem recebe.
+        </td>
+      </tr>
+      <tr>
+        <td>Te dá o extrato de tudo</td>
+        <td>
+          Cada repasse vem discriminado pedido a pedido: valor bruto, o que
+          foi descontado e o líquido. <strong>É esse o documento que serve de
+          base pra sua declaração.</strong> Ele fica no seu app, em Financeiro.
+        </td>
+      </tr>
+      <tr>
+        <td>Não emite nota no seu lugar</td>
+        <td>
+          Se o seu caso exige nota fiscal, quem emite é você. A Inksa não tem
+          como fazer isso por outra pessoa ou empresa.
+        </td>
+      </tr>
+      <tr>
+        <td>Paga na chave que você cadastrou</td>
+        <td>
+          Se a chave é de CPF, o dinheiro cai na pessoa física. Se você abrir
+          CNPJ depois, troque a chave no app — senão o dinheiro da empresa
+          continua caindo na sua conta pessoal.
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>2. Receber na conta pessoal: pode?</h2>
+
+  <p>
+    <strong>Pode.</strong> Não existe nada de irregular em receber por PIX numa
+    conta de pessoa física. Muita gente começa assim, e não é por aí que os
+    problemas aparecem.
+  </p>
+
+  <p>
+    O problema aparece em dois outros lugares, e o primeiro atrapalha
+    <em>você</em> antes de atrapalhar qualquer órgão público:
+  </p>
+
+  <ul>
+    <li>
+      <strong>Dinheiro misturado esconde o resultado.</strong> Quando o
+      repasse cai na mesma conta do salário, do mercado e da conta de luz, em
+      dois meses ninguém sabe mais quanto o negócio deu. Você trabalha sem
+      saber se está ganhando.
+    </li>
+    <li>
+      <strong>Receber e não declarar é o que dá problema.</strong> A
+      movimentação bancária é informada à Receita — isso é rotina, não
+      armadilha. Ninguém é penalizado por receber; a diferença está em
+      declarar o que entrou.
+    </li>
+  </ul>
+
+  <div class="caixa">
+    <p>
+      <strong>Faça isso hoje, mesmo antes de decidir qualquer coisa:</strong>
+      separe uma conta só para o dinheiro da Inksa. Nem precisa ser conta
+      empresarial — outra conta de pessoa física já resolve. É gratuito na
+      maioria dos bancos digitais e é a única medida desta página que dá
+      resultado no mesmo dia.
+    </p>
+  </div>
+
+  <h2>3. Os dois caminhos</h2>
+
+  <p>
+    Simplificando bastante: ou você segue como pessoa física, ou você se
+    formaliza. Os dois são legítimos, e o que decide costuma ser o quanto você
+    fatura e se o seu cliente precisa de nota.
+  </p>
+
+  <h3>Pessoa física</h3>
+  <ul>
+    <li>Não tem CNPJ, não tem custo fixo mensal, não emite nota fiscal.</li>
+    <li>
+      O que você recebe é rendimento seu, e entra na sua declaração de imposto
+      de renda.
+    </li>
+    <li>
+      A contribuição para o INSS, se você quiser ter direito a aposentadoria e
+      auxílios, é por sua conta.
+    </li>
+    <li>
+      É o começo natural de quem está testando o negócio ou faz poucas
+      entregas por mês.
+    </li>
+  </ul>
+
+  <h3>MEI (Microempreendedor Individual)</h3>
+  <ul>
+    <li>Você passa a ter CNPJ próprio, e com ele conta bancária de empresa.</li>
+    <li>Paga uma contribuição mensal fixa, que já inclui o INSS.</li>
+    <li>Pode emitir nota fiscal.</li>
+    <li>
+      Tem <strong>teto de faturamento</strong> e uma <strong>lista de
+      atividades permitidas</strong>. Nem todo negócio cabe no MEI.
+    </li>
+  </ul>
+
+  <div class="aviso">
+    <b>Por que esta página não traz valores.</b>
+    O teto do MEI, o valor da contribuição mensal e as faixas do imposto de
+    renda mudam de ano em ano. Número escrito aqui envelheceria em silêncio, e
+    você tomaria decisão com informação vencida sem desconfiar. Os valores
+    corretos estão sempre nos sites oficiais logo abaixo.
+  </div>
+
+  <h2>4. O que fazer, na ordem</h2>
+
+  <ol class="passos">
+    <li>
+      <strong>Separe o dinheiro.</strong> Uma conta só para o que entra da
+      Inksa. Hoje, antes de qualquer outra coisa.
+    </li>
+    <li>
+      <strong>Guarde os extratos.</strong> Baixe o extrato dos repasses do seu
+      app todo mês. Nós mantemos o histórico, mas o registro que é seu deve
+      estar com você.
+    </li>
+    <li>
+      <strong>Converse com um contador.</strong> Uma conversa resolve o que
+      dez páginas na internet não resolvem, porque ele olha o seu caso. Se o
+      custo pesa agora, o Sebrae orienta sem cobrar.
+    </li>
+    <li>
+      <strong>Se abrir MEI, avise o app.</strong> Troque a chave PIX para a da
+      conta do CNPJ, no seu perfil. Sem isso o dinheiro da empresa continua
+      caindo na conta pessoal — que é justamente o que você abriu o CNPJ para
+      evitar.
+    </li>
+  </ol>
+
+  <h2>5. Onde buscar a informação oficial</h2>
+
+  <ul>
+    <li>
+      <a href="https://www.gov.br/empresas-e-negocios/pt-br/empreendedor" target="_blank" rel="noopener">
+        Portal do Empreendedor (gov.br)</a> — abrir, consultar e pagar o MEI.
+      É o site oficial e é gratuito.
+    </li>
+    <li>
+      <a href="https://www.gov.br/receitafederal/pt-br" target="_blank" rel="noopener">
+        Receita Federal</a> — imposto de renda e obrigações da pessoa física.
+    </li>
+    <li>
+      <a href="https://sebrae.com.br" target="_blank" rel="noopener">Sebrae</a>
+      — orientação gratuita para quem está começando.
+    </li>
+    <li>
+      A <strong>prefeitura da sua cidade</strong> — alvará e regras de
+      funcionamento mudam de município para município, inclusive para quem
+      produz em casa.
+    </li>
+  </ul>
+
+  <div class="aviso">
+    <b>Cuidado com quem cobra para abrir o seu MEI.</b>
+    A abertura no Portal do Empreendedor é gratuita, e a contribuição mensal
+    se paga direto no site do governo. Existe gente cobrando por isso e
+    mandando boleto falso. Na dúvida, confira o endereço: tem que terminar em
+    <strong>gov.br</strong>.
+  </div>
+
+  <h2>6. Ficou com dúvida sobre a Inksa?</h2>
+
+  <p>
+    Sobre <em>o seu repasse</em> — quanto entrou, o que foi descontado, quando
+    cai — pode chamar a gente no WhatsApp
+    <a href="https://wa.me/5549998292320">(49) 99829-2320</a> ou no
+    <a href="mailto:suporte@inksadelivery.com.br">suporte@inksadelivery.com.br</a>.
+    Isso é nosso e a gente responde.
+  </p>
+  <p>
+    Sobre <em>a sua situação fiscal</em>, a resposta honesta é que não somos
+    nós que devemos responder. Preferimos te mandar para um contador a te dar
+    uma resposta confiante e errada.
+  </p>
+
+</div>
+
+<footer>
+  <a href="/">Início</a>
+  <a href="/termos.html">Termos de uso</a>
+  <a href="/privacidade.html">Privacidade</a>
+  <a href="/excluir-conta.html">Excluir conta</a>
+  <p style="margin-top:1rem">Inksa Delivery · Lages, Santa Catarina.</p>
+</footer>
+
+</div>
+</body>
+</html>
