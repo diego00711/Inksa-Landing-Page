@@ -206,6 +206,11 @@
 
   .foto { width: 100%; border-radius: 5px; display: block; border: 1px solid var(--linha); }
 
+  .perfis-web { margin-top: 1.6rem; font-size: .92rem; color: var(--musgo); }
+  .perfis-web a { color: var(--brasa); font-weight: 600; text-decoration: none;
+                  border-bottom: 1px solid currentColor; }
+  .perfis-web a:hover { color: var(--tinta); }
+
   /* Saída pra quem não quer instalar app ------------------------------- */
   .sem-app { margin-top: 1.5rem; font-size: .95rem; color: rgba(255,255,255,.72); }
   .sem-app a {
@@ -332,9 +337,14 @@
          essa desconfiança é justa. Sem esta saída, quem chega pelo site e não
          quer baixar nada simplesmente vai embora — e a versão de navegador é
          o MESMO app, já no ar. -->
+    <!-- Leva pro seletor, não direto pro app do cliente: quem não quer
+         instalar nada pode ser parceiro ou entregador, e os três têm versão
+         de navegador. Mandar todo mundo pro app do cliente resolvia um caso
+         e deixava dois de fora. Por isso o texto fala em "entrar", não em
+         "pedir" — prometer pedido e mostrar uma escolha seria isca. -->
     <p class="sem-app">
       Não quer instalar nada?
-      <a href="https://clientes.inksadelivery.com.br">Peça direto pelo navegador →</a>
+      <a href="#perfis">Entre pelo navegador →</a>
     </p>
   </div>
 </section>
@@ -372,6 +382,15 @@
           <span class="seta">Falar no WhatsApp →</span></div>
       </a>
     </div>
+    <!-- O cartão do navegador acima é o do cliente, que é a maioria. Parceiro
+         e entregador também rodam no navegador, e sem esta linha quem chegou
+         aqui pelo "entre pelo navegador" e não é cliente ficava sem saída. -->
+    <p class="perfis-web revela">
+      Parceiro e entregador também funcionam sem instalar:
+      <a href="https://restaurante.inksadelivery.com.br">painel do parceiro</a>
+      ·
+      <a href="https://entregadores.inksadelivery.com.br">app do entregador</a>
+    </p>
   </div>
 </section>
 
