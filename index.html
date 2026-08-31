@@ -272,6 +272,16 @@
 
   /* ── Inko ─────────────────────────────────────────────────────────────── */
   .pista { position: fixed; left: 0; right: 0; bottom: 0; height: 78px; pointer-events: none; z-index: 30; }
+  /* ── O INKO NÃO ANDA NO CELULAR ──────────────────────────────────────────
+     Ele é a barra de progresso da rolagem: atravessa a tela conforme a pessoa
+     desce. Num monitor largo isso funciona, porque ele tem 1300px de pista pra
+     percorrer e o movimento lê como avanço.
+     Num celular a pista tem 390px: ele cruza a tela quase inteira já nas
+     primeiras roladas, e o que sobra é um bonequinho andando parado no rodapé
+     — sem função visível, ocupando 78px da tela que é justamente onde o
+     polegar trabalha. O Diego notou isso em 31/08/2026.
+     Some no celular. No desktop, onde o efeito faz sentido, ele fica. */
+  @media (max-width: 640px) { .pista { display: none; } }
   .pista .chao { position: absolute; left: 0; right: 0; bottom: 10px; height: 2px;
                  background: linear-gradient(90deg, transparent, var(--brasa) 35%, var(--brasa) 65%, transparent); opacity: .25; }
   .inko { position: absolute; bottom: 8px; left: 0; width: 62px; height: auto; }
@@ -844,11 +854,16 @@
        progresso. Em vez de um traço abstrato, quem mede o quanto falta é o
        personagem — e ele espelha o topo da página. */
     var inko = document.getElementById("inko"), trilho = document.getElementById("trilho");
+    /* No celular o Inko está escondido por CSS (ver .pista). Mover um elemento
+       invisível a cada rolada é trabalho jogado fora — e rolagem é justamente
+       onde celular fraco engasga. O tracinho do cabeçalho continua, porque ele
+       é fino, não ocupa espaço e funciona em qualquer largura. */
+    var inkoVisivel = function () { return window.innerWidth > 640; };
     function anda() {
       var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
       var p = max > 0 ? Math.min(1, h.scrollTop / max) : 0;
       if (trilho) trilho.style.width = (p * 100) + "%";
-      if (inko) inko.style.transform = "translateX(" + (p * (window.innerWidth - 78)) + "px)";
+      if (inko && inkoVisivel()) inko.style.transform = "translateX(" + (p * (window.innerWidth - 78)) + "px)";
     }
     anda();
     window.addEventListener("scroll", anda, { passive: true });
