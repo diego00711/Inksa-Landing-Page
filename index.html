@@ -1022,8 +1022,12 @@
        1,4) e adicional de utilitário R$ 15 (não R$ 25). Todos os cinco preços
        exibidos estavam errados. O objeto TARIFA abaixo é só o socorro de
        quando a API não responde. */
+    /* Socorro de rede. A API leva ~3s pra responder (Render), e nesses segundos
+       é ISTO que aparece na tela — então precisa ser a tarifa em vigor, não a
+       de ontem. Confira contra o admin sempre que mexer em preço; um valor
+       velho aqui não quebra nada, só mente por três segundos. */
     var TARIFA = {
-      base: 5, por_km: 1.5, km_gratis: 0, fator_rua: 1.3,
+      base: 7, por_km: 1.2, km_gratis: 1.5, fator_rua: 1.4,
       veiculos: [
         { chave: "bike",       rotulo: "bicicleta",  ate_kg: 8,   adicional: 0,  km: null },
         { chave: "moto",       rotulo: "moto",       ate_kg: 20,  adicional: 0,  km: null },
