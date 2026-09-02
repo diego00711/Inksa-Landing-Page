@@ -1,0 +1,92 @@
+    /* ── A BALANÇA ─────────────────────────────────────────────────────────
+       Os números aqui são OS MESMOS que o servidor usa (platform_settings):
+       taxa base R$5, primeiro km grátis, R$1,50/km, fator de rua 1,4 e o
+       adicional de carga por veículo. Se mudarem no admin, mude aqui — uma
+       demonstração que mente sobre o próprio preço é pior que não ter. */
+    var BASE = 5, GRATIS = 1, PORKM = 1.5, FATOR = 1.4, RETA = 3;
+    var KM = RETA * FATOR;                       /* 4,2 km de percurso */
+    var VEICULOS = [
+      { v: "bike",       nome: "bicicleta", ate: 8,   fixo: 0,  km: null },
+      { v: "moto",       nome: "moto",      ate: 20,  fixo: 0,  km: null },
+      { v: "carro",      nome: "carro",     ate: 80,  fixo: 8,  km: 2.5 },
+      { v: "utilitario", nome: "utilitário",ate: 300, fixo: 25, km: 3.5 }
+    ];
+
+    var elPeso = document.getElementById("peso");
+    if (elPeso) {
+      var elVal = document.getElementById("pesoVal"), elNome = document.getElementById("vNome");
+      var elFrete = document.getElementById("vFrete"), elAlerta = document.getElementById("vAlerta");
+      var degraus = document.querySelectorAll("#escada .degrau");
+      var atalhos = document.querySelectorAll("#atalhos button");
+
+      /* Escala EXPONENCIAL, não linear. Quase todo pedido pesa menos de 5 kg;
+         numa régua linear até 320 kg, essa faixa — que é a real — caberia nos
+         primeiros 2% do curso e seria impossível de ajustar com o dedo. */
+      function paraKg(t) { return 0.2 * Math.pow(1600, t / 1000); }
+      function paraCurso(kg) { return Math.log(kg / 0.2) / Math.log(1600) * 1000; }
+
+      function fmt(n) {
+        return n < 10 ? n.toFixed(1).replace(".", ",") : String(Math.round(n));
+      }
+      function brl(n) { return "R$ " + n.toFixed(2).replace(".", ","); }
+
+      function mostra() {
+        var kg = paraKg(+elPeso.value);
+        elVal.textContent = fmt(kg);
+
+        /* Quem manda no atalho aceso é o PESO, não o clique. Assim ele já nasce
+           certo (a página abre em 0,8 kg = Pizza) e volta a acender sozinho se
+           a pessoa arrastar de volta pra cima de um dos pesos. A tolerância
+           existe porque o valor volta da régua com arredondamento. */
+        atalhos.forEach(function (b) {
+          var alvo = +b.dataset.kg;
+          b.setAttribute("aria-pressed", String(Math.abs(kg - alvo) / alvo < 0.01));
+        });
+
+        var escolhido = null;
+        for (var i = 0; i < VEICULOS.length; i++) {
+          if (kg <= VEICULOS[i].ate) { escolhido = VEICULOS[i]; break; }
+        }
+
+        degraus.forEach(function (d) {
+          var cfg = VEICULOS.filter(function (x) { return x.v === d.dataset.v; })[0];
+          if (!escolhido) { d.dataset.estado = "leve"; return; }
+          d.dataset.estado = cfg.v === escolhido.v ? "usa"
+                           : cfg.ate < escolhido.ate ? "leve" : "sobra";
+        });
+
+        if (!escolhido) {
+          /* Acima de 300 kg nenhum veículo leva. Dizer isso é mais honesto —
+             e mais convincente — do que inventar um valor. */
+          elNome.textContent = "Nenhum veículo leva isso";
+          elFrete.textContent = "—";
+          elAlerta.hidden = false;
+          elAlerta.textContent = "Acima de 300 kg o pedido não é oferecido a ninguém, "
+            + "em vez de sair e travar na porta da loja.";
+          return;
+        }
+        elAlerta.hidden = true;
+        elNome.textContent = "Vai de " + escolhido.nome;
+        var porKm = escolhido.km || PORKM;
+        elFrete.textContent = brl(BASE + escolhido.fixo + Math.max(0, KM - GRATIS) * porKm);
+        /* Bicicleta e moto custam o MESMO frete — o adicional só entra quando a
+           carga exige carro ou utilitário. Sem esta linha, quem arrasta de 8
+           para 13 kg vê o veículo mudar e o preço parado, e acha que travou. */
+        var legenda = document.getElementById("freteNota");
+        if (legenda) {
+          legenda.textContent = escolhido.fixo > 0
+            ? "de frete · inclui adicional de carga"
+            : "de frete · sem adicional de carga";
+        }
+      }
+
+      elPeso.addEventListener("input", mostra);
+      atalhos.forEach(function (b) {
+        b.addEventListener("click", function () {
+          elPeso.value = Math.round(paraCurso(+b.dataset.kg));
+          mostra();
+        });
+      });
+      mostra();
+    }
+

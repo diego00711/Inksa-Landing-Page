@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API para sistemas de loja — Inksa Delivery</title>
+<meta name="description" content="Documentação da API pública do Inksa Delivery: como um PDV ou ERP recebe os pedidos da loja, muda o status e sincroniza o cardápio.">
+<meta name="theme-color" content="#DD5209">
+<link rel="icon" href="assets/logo.jpg">
+<style>
+  :root {
+    --brasa: #DD5209;
+    --brasa-veu: #FFF1E8;
+    --tinta: #1C1917;
+    --musgo: #6B615A;
+    --linha: #E7E2DD;
+    --papel: #FFFFFF;
+    --fundo: #F6F4F1;
+    --alerta: #92400E;
+    --alerta-veu: #FEF6E7;
+    --carvao: #1F1B18;
+    --codigo: #F3EFEA;
+    --verde: #166534;
+    --verde-veu: #F0FDF4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.68; color: var(--tinta); background: var(--fundo);
+    -webkit-font-smoothing: antialiased;
+  }
+  .folha { max-width: 54rem; margin: 0 auto; background: var(--papel); min-height: 100vh; }
+  .dentro { padding: 0 1.6rem; }
+
+  header { padding: 2.6rem 1.6rem 2rem; border-bottom: 3px solid var(--brasa); }
+  header a.voltar {
+    display: inline-block; margin-bottom: 1.1rem; color: var(--brasa);
+    text-decoration: none; font-size: .9rem; font-weight: 600;
+  }
+  header a.voltar:hover { text-decoration: underline; }
+  header h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.15; color: var(--brasa); }
+  header p.sub { margin-top: .7rem; color: var(--musgo); font-size: 1.02rem; }
+  .data { margin-top: .9rem; font-size: .82rem; color: #9A918B; }
+
+  h2 {
+    font-size: 1.3rem; margin: 2.6rem 0 .9rem; padding-top: 1.6rem;
+    border-top: 1px solid var(--linha); line-height: 1.3;
+  }
+  h3 { font-size: 1.02rem; margin: 1.8rem 0 .5rem; }
+  p { margin: .8rem 0; }
+  ul, ol { margin: .8rem 0 .8rem 1.3rem; }
+  li { margin: .4rem 0; }
+  strong { font-weight: 650; }
+  a { color: var(--brasa); }
+
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: .88em; background: var(--codigo); padding: .12em .38em;
+    border-radius: 4px; word-break: break-word;
+  }
+  pre {
+    background: var(--carvao); color: #EDE7E1; padding: 1rem 1.1rem;
+    border-radius: 10px; overflow-x: auto; margin: .9rem 0;
+    font-size: .84rem; line-height: 1.55;
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: 1em; }
+  .cmt { color: #9A8F86; }
+  .str { color: #A8D5A2; }
+  .key { color: #F0B27A; }
+
+  .rota {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
+    margin: 1.9rem 0 .5rem; padding: .55rem .8rem;
+    background: var(--brasa-veu); border-radius: 8px;
+  }
+  .verbo {
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700;
+    font-size: .78rem; letter-spacing: .04em; color: #fff;
+    background: var(--brasa); padding: .16rem .5rem; border-radius: 4px;
+  }
+  .verbo.get { background: #1D4ED8; }
+  .caminho {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: .92rem; font-weight: 600; word-break: break-all;
+  }
+
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .92rem; }
+  th, td { text-align: left; padding: .58rem .6rem; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--musgo); }
+  td code { font-size: .85em; }
+  .rolagem { overflow-x: auto; }
+
+  .aviso {
+    background: var(--alerta-veu); border-left: 4px solid var(--alerta);
+    padding: 1rem 1.1rem; border-radius: 0 8px 8px 0; margin: 1.3rem 0;
+    font-size: .96rem;
+  }
+  .aviso strong { color: var(--alerta); }
+  .bom {
+    background: var(--verde-veu); border-left: 4px solid var(--verde);
+    padding: 1rem 1.1rem; border-radius: 0 8px 8px 0; margin: 1.3rem 0;
+    font-size: .96rem;
+  }
+
+  footer {
+    margin-top: 3rem; padding: 2rem 1.6rem 3rem;
+    border-top: 1px solid var(--linha); color: var(--musgo); font-size: .9rem;
+  }
+  footer a { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="folha">
+
+<header>
+  <a class="voltar" href="/">&larr; Inksa Delivery</a>
+  <h1>API para sistemas de loja</h1>
+  <p class="sub">
+    Como um PDV, ERP ou sistema de gestão recebe os pedidos feitos no Inksa,
+    devolve o status e mantém o cardápio em dia — sem ninguém digitar duas vezes.
+  </p>
+  <p class="data">Versão 1.0 &middot; Atualizada em 2 de setembro de 2026</p>
+</header>
+
+<div class="dentro">
+
+<h2>Para quem é esta página</h2>
+
+<p>
+  Para quem desenvolve o sistema que o restaurante já usa. O lojista não precisa
+  ler nada aqui: ele gera uma chave dentro do aplicativo do parceiro e entrega
+  para você.
+</p>
+
+<p>
+  O desenho é o mesmo que você já conhece de outras plataformas de delivery:
+  <strong>o seu sistema pergunta ao Inksa se há pedido novo</strong>. Não
+  precisamos de endereço público, porta aberta, IP fixo nem webhook do seu lado.
+  Se o PDV da loja ficar sem internet por vinte minutos, nada se perde — na
+  próxima pergunta os pedidos daquele período vêm juntos.
+</p>
+
+<h2>Começar em três passos</h2>
+
+<ol>
+  <li>
+    <strong>O lojista gera a chave.</strong> No aplicativo do parceiro:
+    <em>Integração &rarr; Chaves de acesso &rarr; Gerar chave</em>. A chave aparece
+    uma única vez; ele copia e entrega para você.
+  </li>
+  <li>
+    <strong>Você confere a chave</strong> chamando <code>/status</code>. A resposta
+    diz de qual loja ela é. Se o nome não for o esperado, pare aqui.
+  </li>
+  <li>
+    <strong>Você passa a perguntar por pedidos</strong> em <code>/pedidos</code>,
+    a cada 30 ou 60 segundos.
+  </li>
+</ol>
+
+<h2>Endereço e autenticação</h2>
+
+<pre><code>https://inksa-auth-flask-dev.onrender.com/api/parceiro/v1</code></pre>
+
+<p>
+  Toda chamada leva a chave no cabeçalho <code>Authorization</code>:
+</p>
+
+<pre><code>Authorization: Bearer ink_live_xxxxxxxxxxxxxxxxxxxx</code></pre>
+
+<p>
+  A chave vale para <strong>uma loja só</strong>. Rede com várias unidades usa
+  uma chave por unidade. Tudo é JSON, em UTF-8.
+</p>
+
+<div class="aviso">
+  <strong>A chave é uma senha.</strong> Guarde do lado servidor, nunca dentro do
+  aplicativo instalado no caixa nem em código versionado. Se vazar, o lojista
+  revoga na mesma tela em que gerou e o acesso cai na hora.
+</div>
+
+<h2>Conferir a chave</h2>
+
+<div class="rota"><span class="verbo get">GET</span><span class="caminho">/status</span></div>
+
+<pre><code><span class="cmt"># pedido</span>
+curl -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
+  https://inksa-auth-flask-dev.onrender.com/api/parceiro/v1/status
+
+<span class="cmt"># resposta</span>
+{
+  <span class="key">"ok"</span>: true,
+  <span class="key">"versao"</span>: <span class="str">"1.0"</span>,
+  <span class="key">"ambiente"</span>: <span class="str">"live"</span>,
+  <span class="key">"loja"</span>: {
+    <span class="key">"id"</span>: <span class="str">"7a9057cb-cbcd-4c29-8799-65632b3ebd8d"</span>,
+    <span class="key">"nome"</span>: <span class="str">"Yo!Frango frito e comida Coreana"</span>,
+    <span class="key">"aberta"</span>: true
+  },
+  <span class="key">"servidor_em"</span>: <span class="str">"2026-09-02T23:39:51.265628+00:00"</span>
+}</code></pre>
+
+<p>
+  Chame isto antes de qualquer outra coisa. É barato e evita o erro mais caro da
+  integração: configurar a chave de uma loja no sistema de outra e só descobrir
+  quando um pedido não chega — no movimento, com o cliente esperando.
+</p>
+
+<h2>Buscar pedidos</h2>
+
+<div class="rota"><span class="verbo get">GET</span><span class="caminho">/pedidos?desde=&lt;data ISO&gt;&amp;limite=&lt;1..100&gt;</span></div>
+
+<p>
+  Devolve os pedidos <strong>alterados</strong> depois de <code>desde</code>, do
+  mais antigo para o mais novo. Sem <code>desde</code>, devolve as últimas 24
+  horas.
+</p>
+
+<div class="bom">
+  <strong>Guarde o <code>proximo_desde</code> da resposta e mande-o na chamada
+  seguinte.</strong> Ele vem pronto justamente para você não precisar usar o
+  relógio da sua máquina — se ele estiver alguns segundos adiantado em relação
+  ao nosso, um pedido cai no vão e ninguém percebe.
+</div>
+
+<pre><code>curl -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
+  <span class="str">".../pedidos?desde=2026-09-02T14:30:00Z"</span>
+
+{
+  <span class="key">"pedidos"</span>: [ { <span class="cmt">/* ver formato abaixo */</span> } ],
+  <span class="key">"quantidade"</span>: 1,
+  <span class="key">"proximo_desde"</span>: <span class="str">"2026-09-02T14:52:07.113000+00:00"</span>
+}</code></pre>
+
+<p>
+  O filtro é por <em>última alteração</em>, não por criação. Assim você recebe
+  também o pedido antigo que mudou de estado — um cancelamento, por exemplo.
+  Pedidos ainda aguardando pagamento e pedidos arquivados não aparecem.
+</p>
+
+<h3>Um pedido específico</h3>
+
+<div class="rota"><span class="verbo get">GET</span><span class="caminho">/pedidos/&lt;número&gt;</span></div>
+
+<p>O número é o mesmo que a loja vê na tela: <code>1001</code>, <code>1002</code>…</p>
+
+<h3>Formato do pedido</h3>
+
+<pre><code>{
+  <span class="key">"numero"</span>: 1001,
+  <span class="key">"id"</span>: <span class="str">"65fea81c-b4c5-455f-ba5f-750516e574ff"</span>,
+  <span class="key">"status"</span>: <span class="str">"pending"</span>,
+  <span class="key">"criado_em"</span>: <span class="str">"2026-08-29T01:04:12.885694+00:00"</span>,
+  <span class="key">"atualizado_em"</span>: <span class="str">"2026-08-30T00:41:38.268293+00:00"</span>,
+  <span class="key">"pagamento"</span>: { <span class="key">"forma"</span>: <span class="str">"pix"</span>, <span class="key">"pago"</span>: true },
+  <span class="key">"valores"</span>: { <span class="key">"itens"</span>: 79.87, <span class="key">"entrega"</span>: 5.0, <span class="key">"total"</span>: 79.87 },
+  <span class="key">"entrega"</span>: {
+    <span class="key">"tipo"</span>: <span class="str">"platform"</span>,
+    <span class="key">"endereco"</span>: <span class="str">"Rua Doutor Jorge Bleyer - Conta Dinheiro - Lages — 771 fundos"</span>
+  },
+  <span class="key">"cliente"</span>: { <span class="key">"nome"</span>: <span class="str">"Pamela Garcia Weber"</span>, <span class="key">"telefone"</span>: <span class="str">"(49)99970-2890"</span> },
+  <span class="key">"itens"</span>: [
+    {
+      <span class="key">"nome"</span>: <span class="str">"Trio Coreano Crocante (Individual) + refri"</span>,
+      <span class="key">"quantidade"</span>: 1,
+      <span class="key">"preco_unitario"</span>: 79.87,
+      <span class="key">"observacao"</span>: null
+    }
+  ],
+  <span class="key">"observacoes"</span>: <span class="str">""</span>
+}</code></pre>
+
+<div class="aviso">
+  <strong>Não some <code>itens</code> + <code>entrega</code> esperando dar
+  <code>total</code>.</strong> Quando há cupom, o cliente paga menos que a soma —
+  o frete pode ter sido bancado pela plataforma, por exemplo.
+  <code>valores.total</code> é <em>o que o cliente pagou</em>, e é esse o número
+  que vale. A taxa de entrega <strong>não</strong> vem dentro da lista de itens:
+  ela está só em <code>valores.entrega</code>, para a sua cozinha não imprimir
+  "Taxa de Entrega" como se fosse um prato.
+</div>
+
+<p>
+  Em <code>entrega.tipo</code>, <code>platform</code> significa que um entregador
+  do Inksa vai retirar; <code>own</code> significa que a própria loja entrega.
+</p>
+
+<h2>Mudar o status</h2>
+
+<div class="rota"><span class="verbo">POST</span><span class="caminho">/pedidos/&lt;número&gt;/aceitar</span></div>
+<div class="rota"><span class="verbo">POST</span><span class="caminho">/pedidos/&lt;número&gt;/preparar</span></div>
+<div class="rota"><span class="verbo">POST</span><span class="caminho">/pedidos/&lt;número&gt;/pronto</span></div>
+
+<p>São os três passos da cozinha, nesta ordem:</p>
+
+<pre><code>pending  ──aceitar──▶  accepted  ──preparar──▶  preparing  ──pronto──▶  ready</code></pre>
+
+<p>
+  <code>aceitar</code> aceita um corpo opcional com a previsão de preparo:
+</p>
+
+<pre><code>curl -X POST -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"tempo_preparo_min": 25}'</span> \
+  .../pedidos/1001/aceitar
+
+{ <span class="key">"ok"</span>: true, <span class="key">"numero"</span>: 1001, <span class="key">"status"</span>: <span class="str">"accepted"</span> }</code></pre>
+
+<div class="bom">
+  <strong>Repetir a mesma ação é seguro.</strong> Se você reenviar
+  <code>aceitar</code> num pedido já aceito, a resposta é <code>200</code> com
+  <code>"observacao": "O pedido já estava neste status."</code> — e não um erro.
+  Isso existe porque tempo esgotado de rede acontece o tempo todo, e mostrar erro
+  para o lojista num pedido que está certo é pior que o problema.
+</div>
+
+<p>
+  Chamar fora de ordem devolve <code>409</code> com o estado atual, para você
+  decidir o que fazer:
+</p>
+
+<pre><code>{
+  <span class="key">"erro"</span>: <span class="str">"transicao_invalida"</span>,
+  <span class="key">"mensagem"</span>: <span class="str">"Pedido #1001 está em 'ready'. 'aceitar' só vale quando está em 'pending'."</span>,
+  <span class="key">"status_atual"</span>: <span class="str">"ready"</span>
+}</code></pre>
+
+<h3>Estados possíveis</h3>
+
+<div class="rolagem">
+<table>
+  <tr><th>Status</th><th>Significa</th></tr>
+  <tr><td><code>pending</code></td><td>Chegou. Esperando a loja aceitar.</td></tr>
+  <tr><td><code>accepted</code></td><td>A loja aceitou.</td></tr>
+  <tr><td><code>preparing</code></td><td>Em preparo.</td></tr>
+  <tr><td><code>ready</code></td><td>Pronto. Libera a retirada.</td></tr>
+  <tr><td><code>accepted_by_delivery</code></td><td>Um entregador assumiu e está a caminho da loja.</td></tr>
+  <tr><td><code>delivering</code></td><td>Saiu para entrega.</td></tr>
+  <tr><td><code>delivered</code></td><td>Entregue.</td></tr>
+  <tr><td><code>cancelled</code></td><td>Cancelado.</td></tr>
+</table>
+</div>
+
+<p>
+  Os quatro últimos você <strong>lê</strong>, mas não escreve — veja o porquê no
+  fim da página.
+</p>
+
+<h2>Cardápio</h2>
+
+<div class="rota"><span class="verbo get">GET</span><span class="caminho">/cardapio</span></div>
+<div class="rota"><span class="verbo">POST</span><span class="caminho">/cardapio</span></div>
+
+<p>
+  O envio <strong>cria ou atualiza</strong>: pode mandar o cardápio inteiro
+  quantas vezes quiser sem duplicar nada. A reconciliação usa o
+  <code>ean</code> quando existe e, na falta dele, o nome do item dentro daquela
+  loja.
+</p>
+
+<pre><code>curl -X POST -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "teste": true,
+    "itens": [
+      {"nome":"Guaraná 2L","preco":"12,90","categoria":"Bebidas","ean":"7891234567890","estoque":40},
+      {"nome":"Coxinha","preco":8.5,"categoria":"Salgados"}
+    ]
+  }'</span> .../cardapio
+
+{
+  <span class="key">"ok"</span>: true, <span class="key">"teste"</span>: true,
+  <span class="key">"recebidos"</span>: 2, <span class="key">"criados"</span>: 0, <span class="key">"atualizados"</span>: 0,
+  <span class="key">"ignorados"</span>: [], <span class="key">"total_ignorados"</span>: 0
+}</code></pre>
+
+<div class="bom">
+  <strong>Rode com <code>"teste": true</code> primeiro.</strong> Valida tudo e não
+  grava nada. A resposta lista, linha a linha, o que seria recusado e por quê —
+  bem melhor que descobrir depois que trinta itens entraram sem preço.
+</div>
+
+<p>
+  <code>preco</code> aceita <code>12,90</code>, <code>12.90</code>,
+  <code>"R$ 12,90"</code> e <code>1.234,56</code>. Centavos como número inteiro
+  <em>não</em> são aceitos, por ser ambíguo demais.
+</p>
+
+<p>
+  <code>estoque</code> é opcional. Zero <strong>não</strong> some do cardápio:
+  o item fica visível e marcado como indisponível, porque o cliente precisa saber
+  que a loja trabalha com aquele produto. Sem o campo, o item fica disponível.
+</p>
+
+<p>
+  Campo em branco não apaga o que já existe — em especial a descrição, que o
+  lojista costuma caprichar no aplicativo e que quase nenhuma planilha de ERP
+  carrega. Limite de 2.000 itens por chamada.
+</p>
+
+<h2>Erros</h2>
+
+<p>
+  Todo erro devolve <code>erro</code> (código estável, para o seu
+  <code>switch</code>) e <code>mensagem</code> (texto em português, que pode
+  mudar). <strong>Trate pelo código, nunca pelo texto.</strong>
+</p>
+
+<div class="rolagem">
+<table>
+  <tr><th>Código</th><th>HTTP</th><th>O que fazer</th></tr>
+  <tr><td><code>sem_credencial</code></td><td>401</td><td>Faltou o cabeçalho <code>Authorization</code>.</td></tr>
+  <tr><td><code>credencial_invalida</code></td><td>401</td><td>Chave errada ou revogada. Pare de tentar e avise o lojista.</td></tr>
+  <tr><td><code>nao_encontrado</code></td><td>404</td><td>O pedido não existe <em>nesta loja</em>.</td></tr>
+  <tr><td><code>transicao_invalida</code></td><td>409</td><td>Veja <code>status_atual</code> e siga dali.</td></tr>
+  <tr><td><code>parametro_invalido</code></td><td>400</td><td>Data fora do padrão ISO 8601, por exemplo.</td></tr>
+  <tr><td><code>sem_itens</code></td><td>400</td><td>Envio de cardápio sem a lista <code>itens</code>.</td></tr>
+  <tr><td><code>lote_grande</code></td><td>400</td><td>Mais de 2.000 itens. Divida em partes.</td></tr>
+  <tr><td><code>erro_interno</code></td><td>500</td><td>Problema nosso. Tente de novo em instantes.</td></tr>
+</table>
+</div>
+
+<h2>Limites de chamada</h2>
+
+<div class="rolagem">
+<table>
+  <tr><th>Rota</th><th>Por minuto</th></tr>
+  <tr><td><code>/pedidos</code> e as ações de status</td><td>120</td></tr>
+  <tr><td><code>/status</code></td><td>60</td></tr>
+  <tr><td><code>GET /cardapio</code></td><td>30</td></tr>
+  <tr><td><code>POST /cardapio</code></td><td>10</td></tr>
+</table>
+</div>
+
+<p>
+  Passando disso, a resposta é <code>429</code>. Perguntar por pedidos a cada 30
+  segundos usa 2 das 120 chamadas — há folga de sobra, e não há motivo para
+  perguntar de segundo em segundo.
+</p>
+
+<h2>O que a versão 1 não faz, e por quê</h2>
+
+<p>
+  Duas coisas ficaram de fora de propósito, e não por falta de tempo:
+</p>
+
+<p>
+  <strong>Cancelar pedido.</strong> Cancelar um pedido já pago dispara o estorno
+  ao cliente, e essa regra vive num único lugar do nosso sistema. Abrir um
+  segundo caminho para devolver dinheiro é o tipo de duplicação que cedo ou tarde
+  paga em dobro ou não paga. O lojista cancela pelo aplicativo.
+</p>
+
+<p>
+  <strong>Marcar "saiu para entrega" e "entregue".</strong> Essas duas passam por
+  um código numérico conferido entre entregador, loja e cliente — é o que prova
+  que a entrega aconteceu. Uma rota de API que pulasse o código permitiria
+  fechar um pedido sem entregar nada.
+</p>
+
+<p>
+  Se a sua integração precisar de algo que não está aqui, fale com a gente. Esta
+  versão continua no ar mesmo quando existir uma versão 2: quando o formato
+  mudar, nasce <code>/v2</code> e você migra quando puder. Nada quebra no meio do
+  movimento.
+</p>
+
+</div>
+
+<footer>
+  <div class="dentro">
+    <p>
+      Dúvida técnica, homologação ou sugestão:
+      <a href="mailto:suporte@inksadelivery.com.br">suporte@inksadelivery.com.br</a>.
+      Diga o nome do sistema e da loja — a resposta sai mais rápida.
+    </p>
+    <p style="margin-top:1rem">
+      <a href="/">Inksa Delivery</a> &middot; Lages, Santa Catarina
+    </p>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
