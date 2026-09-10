@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Imposto e formalização — Inksa Delivery</title>
 <meta name="description" content="O que a Inksa faz e o que não faz em relação a imposto, e o que muda entre receber como pessoa física ou como MEI.">
-<meta name="theme-color" content="#DD5209">
+<meta name="theme-color" content="#F97316">
 <link rel="icon" href="assets/logo.jpg">
 <style>
   :root {
-    --brasa: #DD5209;
+    --brasa: #F97316;      /* marca: area, borda */
+  --brasa-texto: #C2410C; /* a mesma, escurecida pra texto sobre claro */
     --brasa-veu: #FFF1E8;
     --tinta: #1C1917;
     --musgo: #6B615A;
@@ -30,10 +31,10 @@
 
   header { padding: 2.6rem 1.6rem 2rem; border-bottom: 3px solid var(--brasa); }
   header a.voltar {
-    display: inline-block; margin-bottom: 1.1rem; color: var(--brasa);
+    display: inline-block; margin-bottom: 1.1rem; color: var(--brasa-texto);
     text-decoration: none; font-size: .9rem; font-weight: 600;
   }
-  header h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.15; color: var(--brasa); }
+  header h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.15; color: var(--brasa-texto); }
   header p.sub { margin-top: .7rem; color: var(--musgo); font-size: 1.02rem; }
   .data { margin-top: .9rem; font-size: .82rem; color: #9A918B; }
 
@@ -47,7 +48,7 @@
   ul { margin: .8rem 0 .8rem 1.15rem; }
   li { margin: .45rem 0; }
   strong { font-weight: 700; }
-  a { color: var(--brasa); }
+  a { color: var(--brasa-texto); }
 
   .aviso {
     margin: 1.6rem 0; padding: 1.1rem 1.2rem; border-radius: 8px;

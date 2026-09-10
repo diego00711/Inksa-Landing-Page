@@ -19,7 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Inksa Delivery — Aqui o dinheiro não pega a estrada.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#DD5209">
+<meta name="theme-color" content="#F97316">
 <link rel="canonical" href="https://www.inksadelivery.com.br/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -35,10 +35,22 @@
     --fundo-3:   #EFF5F7;
     --tinta:     #0F1A21;
     --musgo:     #55707C;
-    --brasa:     #DD5209;
-    --brasa-viva:#FF6B35;
-    --brasa-esc: #A63C04;
-    --brasa-veu: #FFF1E8;
+    /* ── O LARANJA DA MARCA ────────────────────────────────────────────────
+       #F97316 é a cor do LOGO — medida nos pixels sólidos do próprio arquivo
+       (~#F9600C) e igual ao laranja que os quatro apps usam. Até 10/09/2026
+       aqui era #DD5209, visivelmente mais escuro: o site e os apps não pareciam
+       o mesmo produto.
+
+       ⚠️ POR QUE EXISTEM DUAS. Sobre branco, #F97316 tem contraste 2,80 — abaixo
+       do mínimo até pra texto grande (3,0), quanto mais pra rótulo de 0,73rem.
+       Então a cor da marca fica no que é ÁREA (preenchimento, borda, faixa) e o
+       texto usa --brasa-texto, um passo mais escuro da MESMA família (5,18 —
+       passa em tudo). É a mesma cor pro olho e legível pra quem lê. */
+    --brasa:      #F97316;   /* marca: preenchimento, borda, acento */
+    --brasa-texto:#C2410C;   /* a mesma, escurecida pra TEXTO sobre claro */
+    --brasa-viva: #FF6B35;
+    --brasa-esc:  #C2410C;   /* hover de preenchimento */
+    --brasa-veu:  #FFF1E8;
     --breu:      #0E1519;
     --breu-alt:  #17252D;
     --neve:      #E8EDF0;
@@ -56,13 +68,15 @@
     :root:not([data-theme="light"]) {
       --fundo: #0E1519; --fundo-2: #131F26; --fundo-3: #17252D;
       --tinta: #E8EDF0; --musgo: #90A5AF; --linha: rgba(144,165,175,.2);
-      --brasa: #FF7A3D; --brasa-esc: #FF9A68; --brasa-veu: #2A150C;
+      --brasa: #FF7A3D; --brasa-texto: #FF9A68; --brasa-esc: #FF9A68;
+      --brasa-veu: #2A150C;
     }
   }
   :root[data-theme="dark"] {
     --fundo: #0E1519; --fundo-2: #131F26; --fundo-3: #17252D;
     --tinta: #E8EDF0; --musgo: #90A5AF; --linha: rgba(144,165,175,.2);
-    --brasa: #FF7A3D; --brasa-esc: #FF9A68; --brasa-veu: #2A150C;
+    --brasa: #FF7A3D; --brasa-texto: #FF9A68; --brasa-esc: #FF9A68;
+      --brasa-veu: #2A150C;
   }
 
   * { box-sizing: border-box; }
@@ -72,7 +86,11 @@
   .faixa { padding: 5rem 0; }
   .cinza { background: var(--fundo-2); }
   .creme { background: var(--brasa-veu); }
-  .escura { background: var(--breu); color: var(--neve); }
+  /* ⚠️ Seção escura DENTRO da página clara: aqui o laranja de texto tem que ser
+     o CLARO. O --brasa-texto padrão é o escurecido (feito pra ler sobre branco)
+     e sumiria neste fundo. Redefinir o token vale pra qualquer texto que venha
+     a entrar aqui depois, sem precisar lembrar de sobrescrever cor a cor. */
+  .escura { background: var(--breu); color: var(--neve); --brasa-texto: var(--brasa-viva); }
   .escura .apagado { color: #93A6B0; }
   .escura .cartao { background: var(--breu-alt); border-color: rgba(144,165,175,.18); }
 
@@ -84,7 +102,7 @@
   .grande { font-size: 1.2rem; }
   .apagado { color: var(--musgo); }
   .rotulo { font-family: var(--mono); font-size: .73rem; letter-spacing: .18em;
-            text-transform: uppercase; color: var(--brasa); margin: 0 0 1rem; }
+            text-transform: uppercase; color: var(--brasa-texto); margin: 0 0 1rem; }
 
   .btn { font-weight: 600; font-size: .96rem; padding: .85rem 1.5rem; border-radius: 3px;
          text-decoration: none; display: inline-flex; align-items: center; gap: .5rem;
@@ -92,7 +110,7 @@
          transition: transform .15s ease, background .15s ease; }
   .btn-cheio { background: var(--brasa); color: #fff; }
   .btn-cheio:hover { background: var(--brasa-esc); transform: translateY(-2px); }
-  .btn-vazio { background: transparent; color: var(--brasa); }
+  .btn-vazio { background: transparent; color: var(--brasa-texto); }
   .btn-vazio:hover { background: var(--brasa-veu); transform: translateY(-2px); }
   a:focus-visible, .btn:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible
     { outline: 2px solid var(--brasa); outline-offset: 3px; }
@@ -167,7 +185,7 @@
   .perfil .txt { padding: 1.3rem; display: flex; flex-direction: column; gap: .45rem; flex: 1; }
   .perfil .txt p { font-size: .94rem; color: var(--musgo); }
   .perfil .seta { font-family: var(--mono); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
-                  color: var(--brasa); margin-top: auto; padding-top: .7rem; }
+                  color: var(--brasa-texto); margin-top: auto; padding-top: .7rem; }
 
   .duo { display: grid; gap: 3rem; grid-template-columns: 1fr; align-items: start; }
   @media (min-width: 62rem) { .duo { grid-template-columns: 1fr 24rem; gap: 3.5rem; } }
@@ -208,12 +226,12 @@
                padding-bottom: .65rem; border-bottom: 1px solid var(--linha); }
   .linha-res b { font-family: var(--mono); font-size: 1.12rem; font-variant-numeric: tabular-nums; }
   .economia { background: var(--brasa-veu); border-left: 3px solid var(--brasa); padding: 1rem 1.2rem; margin-top: 1.1rem; }
-  .economia > b { font-family: var(--display); font-size: clamp(1.45rem, 4vw, 2rem); color: var(--brasa);
+  .economia > b { font-family: var(--display); font-size: clamp(1.45rem, 4vw, 2rem); color: var(--brasa-texto);
                   display: block; font-variant-numeric: tabular-nums; line-height: 1.1; }
   .economia span { font-size: .88rem; color: var(--musgo); }
 
   .numeros { display: grid; gap: 1.4rem; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); margin-top: 2.1rem; }
-  .num b { font-family: var(--display); font-size: clamp(1.8rem, 5vw, 2.7rem); color: var(--brasa);
+  .num b { font-family: var(--display); font-size: clamp(1.8rem, 5vw, 2.7rem); color: var(--brasa-texto);
            display: block; line-height: 1; font-variant-numeric: tabular-nums; }
   .num span { font-family: var(--mono); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase;
               color: var(--musgo); display: block; margin-top: .5rem; }
@@ -223,7 +241,7 @@
   .cinza .cartao { background: var(--fundo); }
   .cartao p { font-size: .94rem; color: var(--musgo); margin-top: .45rem; }
   .cartao .ico { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
-                 color: var(--brasa); display: block; margin-bottom: .5rem; }
+                 color: var(--brasa-texto); display: block; margin-bottom: .5rem; }
 
   /* ── clube ────────────────────────────────────────────────────────────── */
   .abas { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: 2rem; }
@@ -276,7 +294,7 @@
   .atalhos button { font: 600 .78rem var(--corpo); color: var(--musgo); background: var(--fundo-2);
                     border: 1px solid var(--linha); border-radius: 999px; padding: .32rem .7rem;
                     cursor: pointer; transition: all .15s; }
-  .atalhos button:hover { border-color: var(--brasa); color: var(--brasa); }
+  .atalhos button:hover { border-color: var(--brasa); color: var(--brasa-texto); }
   .atalhos button[aria-pressed="true"] { background: var(--brasa); border-color: var(--brasa); color: #fff; }
 
   /* A ESCADA, em vez de ícones de veículo. Ícone diria QUAL; a escada diz
@@ -297,11 +315,11 @@
   .degrau i { font: 400 .8rem var(--mono); font-style: normal; color: var(--musgo);
               font-variant-numeric: tabular-nums; white-space: nowrap; }
   .degrau em { display: none; font: 600 .66rem var(--mono); font-style: normal;
-               text-transform: uppercase; letter-spacing: .09em; color: var(--brasa); }
+               text-transform: uppercase; letter-spacing: .09em; color: var(--brasa-texto); }
   .degrau[data-estado="nao"]     { opacity: .32; }   /* não leva esse peso */
   .degrau[data-estado="pode"]    { opacity: .72; }   /* leva, mas não é o que fixa o preço */
   .degrau[data-estado="preco"]   { background: var(--brasa-veu); border-color: var(--brasa); }
-  .degrau[data-estado="preco"] b  { color: var(--brasa); }
+  .degrau[data-estado="preco"] b  { color: var(--brasa-texto); }
   .degrau[data-estado="preco"] em { display: inline; }
 
   .balanca-saida { margin-top: 1.3rem; padding-top: 1.1rem; border-top: 1px solid var(--linha);
@@ -359,7 +377,7 @@
   .passo p { font-size: .93rem; color: #93A6B0; }
 
   .perfis-web { margin-top: 1.6rem; font-size: .92rem; color: var(--musgo); }
-  .perfis-web a { color: var(--brasa); font-weight: 600; text-decoration: none;
+  .perfis-web a { color: var(--brasa-texto); font-weight: 600; text-decoration: none;
                   border-bottom: 1px solid currentColor; }
   .perfis-web a:hover { color: var(--tinta); }
 
@@ -372,7 +390,7 @@
   .sem-app a:hover { border-color: #fff; }
 
   /* Contador ------------------------------------------------------------ */
-  .conta { color: var(--brasa); font-variant-numeric: tabular-nums; }
+  .conta { color: var(--brasa-texto); font-variant-numeric: tabular-nums; }
   .numeros {
     display: grid; gap: 1px; margin-top: 2.6rem;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
@@ -410,7 +428,7 @@
   }
   .numero span b { color: var(--tinta); font-weight: 700; }
   .linque {
-    color: var(--brasa); font-weight: 600; text-decoration: none;
+    color: var(--brasa-texto); font-weight: 600; text-decoration: none;
     border-bottom: 1px solid currentColor; padding-bottom: 1px;
   }
   .linque:hover { color: var(--brasa-esc); }
@@ -500,7 +518,7 @@
 
 <header class="topo">
   <div class="topo-linha">
-    <img src="/assets/0d1b52d722.png" alt="Inksa Delivery" width="420" height="225" decoding="async">
+    <img src="/assets/inksa-marca.png" alt="Inksa Delivery" width="365" height="224" decoding="async">
     <div style="display:flex;gap:.5rem;align-items:center">
       <!-- O seletor de perfil era a página inteira antes deste site e virou
            uma seção aqui. Sem um caminho no topo, quem chega pra entrar tem
@@ -518,7 +536,7 @@
   <video autoplay muted loop playsinline src="/assets/b470075c3c.mp4" aria-hidden="true"></video>
   <div class="veu"></div>
   <div class="conteudo dentro">
-    <img class="heroi-logo" src="/assets/0d1b52d722.png" alt="Inksa Delivery" width="420" height="225" decoding="async">
+    <img class="heroi-logo" src="/assets/inksa-marca.png" alt="Inksa Delivery" width="365" height="224" decoding="async">
     <span class="lema">O delivery que fica na cidade</span>
     <h1>Aqui o dinheiro<br>não pega <em>a estrada</em>.</h1>
     <p class="grande" style="margin-top:1.4rem">
@@ -627,7 +645,7 @@
       <span class="rotulo" style="margin-bottom:.8rem">O seu benefício</span>
       <div class="resultado" style="margin-top:0">
         <div class="linha-res"><span class="apagado">Comissão normal</span><b style="text-decoration:line-through;color:var(--musgo)">15%</b></div>
-        <div class="linha-res"><span class="apagado">Comissão de Fundador</span><b style="color:var(--brasa)">7,5%</b></div>
+        <div class="linha-res"><span class="apagado">Comissão de Fundador</span><b style="color:var(--brasa-texto)">7,5%</b></div>
         <div class="linha-res"><span class="apagado">Duração</span><b>6 meses</b></div>
         <div class="linha-res" style="border:none"><span class="apagado">Mensalidade, adesão, fidelidade</span><b>R$ 0</b></div>
       </div>
@@ -765,12 +783,12 @@
       <div class="calc revela">
         <label for="fat">Faturamento mensal em delivery</label>
         <div class="campo"><span>R$</span><input id="fat" type="text" inputmode="numeric" value="20.000"></div>
-        <label for="tx" style="margin-top:1.4rem">Comissão que você paga hoje: <b id="txval" style="color:var(--brasa)">25%</b></label>
+        <label for="tx" style="margin-top:1.4rem">Comissão que você paga hoje: <b id="txval" style="color:var(--brasa-texto)">25%</b></label>
         <input id="tx" type="range" min="8" max="35" step="1" value="25" aria-label="Comissão paga hoje, em porcentagem">
         <div class="resultado">
           <div class="linha-res"><span class="apagado">Você paga hoje</span><b id="hoje">R$ 5.000</b></div>
           <div class="linha-res"><span class="apagado">Na Inksa (15%)</span><b id="inksa">R$ 3.000</b></div>
-          <div class="linha-res"><span class="apagado">Como Fundador (7,5%)</span><b id="fund" style="color:var(--brasa)">R$ 1.500</b></div>
+          <div class="linha-res"><span class="apagado">Como Fundador (7,5%)</span><b id="fund" style="color:var(--brasa-texto)">R$ 1.500</b></div>
         </div>
         <div class="economia">
           <span>Economia nos 6 meses como Fundador</span>
@@ -1048,7 +1066,7 @@
   <div class="dentro">
     <div class="rodape">
       <div>
-        <img src="/assets/0d1b52d722.png" alt="Inksa Delivery" style="height:40px;width:auto;display:block;margin-bottom:.55rem" width="420" height="225" decoding="async" loading="lazy">
+        <img src="/assets/inksa-marca.png" alt="Inksa Delivery" style="height:40px;width:auto;display:block;margin-bottom:.55rem" width="365" height="224" decoding="async" loading="lazy">
         <span style="font-family:var(--mono);font-size:.69rem;letter-spacing:.16em;text-transform:uppercase;color:#7C8F98">Lages · Santa Catarina</span>
       </div>
       <div><h3>Aplicativos</h3>
@@ -1090,8 +1108,8 @@
     <g class="corpo">
       <path d="M38 22 q12 -12 24 0" stroke="#A63C04" stroke-width="6" fill="none" stroke-linecap="round"/>
       <rect x="13" y="20" width="74" height="72" rx="13" fill="#FF6B35"/>
-      <rect x="13" y="20" width="74" height="19" rx="13" fill="#DD5209"/>
-      <rect x="13" y="32" width="74" height="7" fill="#DD5209"/>
+      <rect x="13" y="20" width="74" height="19" rx="13" fill="#C2410C"/>
+      <rect x="13" y="32" width="74" height="7" fill="#C2410C"/>
       <rect x="42" y="34" width="16" height="9" rx="3" fill="#A63C04"/>
       <circle cx="36" cy="60" r="9.5" fill="#fff"/>
       <circle cx="64" cy="60" r="9.5" fill="#fff"/>
