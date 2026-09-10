@@ -328,6 +328,36 @@
   .insta .diz { font-size: .84rem; color: var(--musgo); display: block; }
   .escura .insta { background: var(--breu-alt); border-color: rgba(144,165,175,.22); }
 
+  /* ── Inksa Social ───────────────────────────────────────────────────────
+     A seção do Dia I era um bloco igual aos outros, com o título "Dia I" —
+     duas palavras que não dizem nada pra quem chega. O nome do programa,
+     Inksa Social, só existia na página de dentro.
+
+     Os três passos estavam num parágrafo com <br><br> e números em negrito.
+     Aqui viram degraus de verdade: a numeração significa alguma coisa (é
+     ordem no tempo, não enfeite), então ela ganha forma de sequência. */
+  .social-selo { display: inline-flex; align-items: center; gap: .6rem;
+                 font-family: var(--mono); font-size: .72rem; letter-spacing: .18em;
+                 text-transform: uppercase; color: var(--brasa-viva);
+                 border: 1px solid rgba(255,107,53,.4); border-radius: 999px;
+                 padding: .35rem .95rem; margin-bottom: 1.4rem; }
+  .social-frase { font-family: var(--display); line-height: 1.15;
+                  font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--brasa-viva);
+                  margin: 1.6rem 0 0; max-width: 30ch; }
+  /* UMA COLUNA, não auto-fit. Este bloco mora na metade estreita do .duo, onde
+     auto-fit cabia dois por linha e sobrava um buraco no canto — três passos
+     nunca fecham numa grade de dois. Empilhado ainda lê melhor: 1 → 2 → 3 de
+     cima pra baixo é a direção que a pessoa já espera de uma sequência. */
+  .passos { display: grid; gap: 1px; margin-top: 2.6rem; grid-template-columns: 1fr;
+            background: rgba(144,165,175,.18); border: 1px solid rgba(144,165,175,.18);
+            border-radius: 6px; overflow: hidden; }
+  .passo { background: var(--breu-alt); padding: 1.25rem 1.4rem;
+           display: grid; grid-template-columns: 2.4rem 1fr; column-gap: 1rem; }
+  .passo b { grid-row: 1 / span 2; font-family: var(--display); font-size: 1.9rem;
+             line-height: 1; color: var(--brasa-viva); font-variant-numeric: tabular-nums; }
+  .passo h3 { margin: 0 0 .25rem; color: var(--neve); font-size: 1rem; align-self: center; }
+  .passo p { font-size: .93rem; color: #93A6B0; }
+
   .perfis-web { margin-top: 1.6rem; font-size: .92rem; color: var(--musgo); }
   .perfis-web a { color: var(--brasa); font-weight: 600; text-decoration: none;
                   border-bottom: 1px solid currentColor; }
@@ -972,30 +1002,44 @@
   </div>
 </section>
 
-<section class="faixa escura">
-  <div class="dentro duo meio">
-    <div>
-      <p class="rotulo revela">Prestação de contas</p>
-      <h2 class="revela">Dia I</h2>
-      <p class="grande apagado revela" style="margin-top:1.4rem">
-        Escolhemos uma data. Nela, o lucro da plataforma inteira vai para uma causa
-        da cidade — e publicamos quanto foi, para onde foi e o comprovante.
-      </p>
-      <p class="apagado revela" style="margin-top:1.1rem">
-        Não é campanha com percentual escondido em asterisco. É o lucro do dia,
-        inteiro, com o número na mesa. Se der pouco, publicamos que deu pouco.
-      </p>
-      <div class="botoes revela">
-        <a class="btn btn-cheio" href="/dia-i">Ver a prestação de contas</a>
+<section class="faixa escura" id="inksa-social">
+  <div class="dentro">
+    <span class="social-selo revela">💛 Inksa Social</span>
+    <div class="duo meio">
+      <div>
+        <!-- O título era "Dia I", que não diz nada pra quem chega. O nome do
+             evento vem DEPOIS da frase que explica o que ele é. -->
+        <!-- SEM FREQUÊNCIA no título ("um dia por ano", "todo mês"). O admin
+             marca a data de cada edição quando decide; cravar um ritmo aqui
+             vira promessa vencida se passar do prazo, e este é o texto onde a
+             Inksa está justamente pedindo pra ser levada a sério. -->
+        <h2 class="revela">Um dia inteiro<br>em que a Inksa<br>não fica com nada.</h2>
+        <p class="grande apagado revela" style="margin-top:1.4rem">
+          Chama-se <b style="color:var(--neve)">Dia I</b>. Numa data escolhida, todo
+          o lucro da plataforma — cada comissão e cada margem de frete — vai para
+          uma causa da cidade. O cliente pede o de sempre, paga o de sempre.
+        </p>
+        <p class="apagado revela" style="margin-top:1.1rem">
+          Não é campanha com percentual escondido em asterisco, nem “parte da
+          renda”. É o lucro do dia, inteiro, com o número e o comprovante
+          publicados. Se der pouco, publicamos que deu pouco.
+        </p>
+        <p class="social-frase revela">A conta desse dia fecha em zero pra gente.</p>
+        <div class="botoes revela">
+          <a class="btn btn-cheio" href="/dia-i">Ver o Inksa Social</a>
+        </div>
       </div>
-    </div>
-    <div class="cartao revela" style="align-self:center">
-      <h3 style="color:var(--brasa-viva)">Como funciona</h3>
-      <p style="margin-top:.9rem">
-        <b style="color:var(--neve)">1.</b> A data é anunciada nos três aplicativos com antecedência.<br><br>
-        <b style="color:var(--neve)">2.</b> No dia, todo pedido conta — o cliente não paga nada a mais.<br><br>
-        <b style="color:var(--neve)">3.</b> Fechado o caixa, publicamos o valor e quem recebeu.
-      </p>
+      <div class="revela" style="align-self:center">
+        <p class="rotulo" style="color:var(--brasa-viva)">Como funciona</p>
+        <div class="passos" style="margin-top:1.2rem">
+          <div class="passo"><b>1</b><h3>A data é anunciada</h3>
+            <p>Sai nos três aplicativos com antecedência. Ninguém é pego de surpresa.</p></div>
+          <div class="passo"><b>2</b><h3>Todo pedido conta</h3>
+            <p>Não existe produto especial nem preço diferente. Pedir naquele dia já é participar.</p></div>
+          <div class="passo"><b>3</b><h3>A conta é publicada</h3>
+            <p>Fechado o caixa, vai pro ar quanto deu, quem recebeu e o comprovante.</p></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1019,7 +1063,7 @@
         <a href="https://instagram.com/inksadelivery">Instagram @inksadelivery</a>
         <a href="mailto:suporte@inksadelivery.com.br">suporte@inksadelivery.com.br</a></div>
       <div><h3>Transparência</h3>
-        <a href="/dia-i">Dia I — prestação de contas</a>
+        <a href="/dia-i">Inksa Social — o Dia I</a>
         <a href="https://www.inksadelivery.com.br/impostos.html">Imposto e formalização</a>
         <a href="/termos.html">Termos de uso</a>
         <a href="/privacidade.html">Privacidade</a>
