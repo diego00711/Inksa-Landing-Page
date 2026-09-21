@@ -120,7 +120,12 @@
     Como um PDV, ERP ou sistema de gestão recebe os pedidos feitos no Inksa,
     devolve o status e mantém o cardápio em dia — sem ninguém digitar duas vezes.
   </p>
-  <p class="data">Versão 1.0 &middot; Atualizada em 2 de setembro de 2026</p>
+  <!-- A VERSÃO CONTINUA 1.0 de propósito: nada do contrato mudou — nenhum
+       campo novo, nenhum campo com outro significado. O que mudou foi o
+       COMPORTAMENTO do estoque (a Inksa passou a dar baixa na venda), e isso
+       é documentação, não versão. Bump de versão aqui obrigaria todo
+       integrador a conferir o que quebrou, e não quebrou nada. -->
+  <p class="data">Versão 1.0 &middot; Atualizada em 21 de setembro de 2026</p>
 </header>
 
 <div class="dentro">
@@ -392,6 +397,44 @@ curl -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
   o item fica visível e marcado como indisponível, porque o cliente precisa saber
   que a loja trabalha com aquele produto. Sem o campo, o item fica disponível.
 </p>
+
+<h3>A Inksa dá baixa sozinha entre as suas sincronizações</h3>
+
+<p>
+  Quando um pedido fecha, a Inksa <strong>desconta do estoque</strong> os itens
+  vendidos; pedido cancelado devolve. Ao chegar a zero, o item sai da vitrine
+  automaticamente e volta assim que houver saldo.
+</p>
+
+<p>
+  Isso existe por causa da janela entre duas sincronizações. Se você manda o
+  catálogo de hora em hora e há uma unidade em estoque, sem a baixa dois
+  clientes compram a mesma unidade e o segundo descobre na entrega.
+</p>
+
+<div class="bom">
+  <strong>Quem manda no número continua sendo você.</strong> A próxima chamada
+  de <code>/cardapio</code> sobrescreve o estoque com o que o seu sistema disser.
+  A baixa da Inksa só cobre o intervalo entre um envio e o outro — ela não
+  substitui a sua sincronização, e quanto mais frequente ela for, menor a
+  chance de divergir. Quinze minutos é um bom ponto de partida.
+</div>
+
+<p>
+  Só é afetado o item que <em>tem</em> estoque definido. Item que nunca recebeu
+  o campo continua com estoque nulo, e nulo significa
+  <strong>“esta loja não controla quantidade”</strong> — nada é descontado e o
+  item nunca sai da vitrine por essa razão. É o caso da maioria dos
+  restaurantes.
+</p>
+
+<div class="aviso">
+  <strong>Cuidado com o envio parcial.</strong> Um item sem o campo
+  <code>estoque</code> fica <em>disponível</em>. Se o seu export falhar pela
+  metade e vier sem a coluna, o catálogo inteiro é religado em silêncio —
+  inclusive o que estava zerado. Vale testar esse caso com
+  <code>"teste": true</code> antes de agendar a sincronização.
+</div>
 
 <p>
   Campo em branco não apaga o que já existe — em especial a descrição, que o
