@@ -387,6 +387,49 @@
   .passo p { font-size: .93rem; color: #93A6B0; }
 
   .perfis-web { margin-top: 1.6rem; font-size: .92rem; color: var(--musgo); }
+
+  /* ── A VITRINE DE LOJAS ────────────────────────────────────────────────
+     Cartões pequenos e muitos por linha, ao contrário dos .perfil (grandes,
+     quatro no total). Aqui a informação não é cada loja individualmente: é a
+     QUANTIDADE delas. Cartão grande com cinco lojas faria a cidade parecer
+     vazia; cartão pequeno faz a mesma lista parecer uma fila. */
+  /* ⚠️ `auto-FIT`, não `auto-fill`, E com teto de largura no cartão. Os três
+     pedaços importam e cada um resolve um defeito medido:
+       auto-fill  criava 6 trilhas pra 5 lojas e deixava um buraco de 186px no
+                  fim da fila — a vitrine parecia ter perdido um cartão;
+       auto-fit   fecha a fila exata, MAS sozinho estica: com 2 lojas cada
+                  cartão viraria um bloco de 550px;
+       max-width  segura o cartão em 14rem, então 2 lojas ficam com 224px e
+                  bem distribuídas em vez de gigantes.
+     A vitrine precisa parecer certa com duas lojas e com trinta, porque os
+     dois números vão acontecer. */
+  /* `grid-auto-rows: 1fr` iguala TODAS as linhas, não só os cartões de uma
+     linha. No celular a grade vira 2 colunas e nome curto ("Sabor Supremo")
+     fica numa linha enquanto nome longo ("Yo!Frango frito e comida Coreana")
+     quebra em duas — sem isto, a segunda fileira ficava 19px mais baixa que a
+     primeira e a vitrine parecia desalinhada. */
+  .lojas { display: grid; gap: .9rem; margin-top: 2.5rem; justify-items: center;
+           grid-auto-rows: 1fr;
+           grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
+  .loja { display: flex; flex-direction: column; align-items: center; text-align: center;
+          gap: .7rem; padding: 1.2rem .8rem; border: 1px solid var(--linha);
+          border-radius: 5px; background: var(--fundo); text-decoration: none;
+          color: inherit; width: 100%; max-width: 14rem;
+          transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  .loja:hover { transform: translateY(-3px); border-color: var(--brasa);
+                box-shadow: 0 12px 28px rgba(15,26,33,.10); }
+  /* Quadrado fixo com object-fit: as logos dos parceiros vêm em proporções
+     imprevisíveis (quadrada, banner deitado, retrato). Sem isto a fila fica
+     com alturas diferentes e parece desmontada. `contain` e não `cover`
+     porque cortar a marca de um parceiro é pior que sobrar espaço. */
+  .loja .marca { width: 4.5rem; height: 4.5rem; border-radius: 5px; background: var(--fundo-3);
+                 display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .loja .marca img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  /* Reserva: loja sem logo mostra a inicial em vez de um quadrado vazio. */
+  .loja .marca b { font-family: var(--display); font-size: 1.6rem; color: var(--brasa-texto); }
+  .loja .nome { font-weight: 600; font-size: .92rem; line-height: 1.3; }
+  .loja .seg { font-family: var(--mono); font-size: .66rem; letter-spacing: .12em;
+               text-transform: uppercase; color: var(--musgo); }
   .perfis-web a { color: var(--brasa-texto); font-weight: 600; text-decoration: none;
                   border-bottom: 1px solid currentColor; }
   .perfis-web a:hover { color: var(--tinta); }
@@ -625,6 +668,36 @@
       Quer perguntar antes de se cadastrar como entregador?
       <a href="https://wa.me/5549998292320?text=Quero%20ser%20entregador%20Inksa">Chame no WhatsApp</a>
     </p>
+  </div>
+</section>
+
+<!-- ═══ QUEM JÁ ESTÁ AQUI ═══════════════════════════════════════════════════
+     A pergunta que o site não respondia. Ele diz "somos daqui" e "escolha o
+     seu lado", mas alguém de Lages decidindo se baixa quer saber uma coisa
+     antes de tudo: QUE LOJAS TEM. Sem resposta, "plataforma nova" soa como
+     "plataforma vazia".
+
+     ⚠️ AS LOJAS VÊM DO AR, NÃO DAQUI. A lista sai do mesmo endpoint público
+     que alimenta o app do cliente. Nome de loja escrito à mão neste arquivo
+     viraria mentira no dia em que um parceiro saísse — e ninguém lembra de
+     apagar. Cadastrou no admin, aparece aqui sozinho.
+
+     ⚠️ NASCE ESCONDIDA e só aparece quando a resposta chega com loja de
+     verdade. A API é no Render e leva alguns segundos; se falhar, a seção
+     inteira não existe. Vitrine vazia num site que promete cidade movimentada
+     é pior do que não ter vitrine. -->
+<section class="faixa" id="secao-lojas" hidden>
+  <div class="dentro">
+    <p class="rotulo revela">Quem já está aqui</p>
+    <h2 class="revela">Já dá pra pedir<br>destas lojas.</h2>
+    <p class="apagado revela" style="margin-top:1.2rem;max-width:52ch">
+      Negócios de Lages que já estão no aplicativo. A lista sai do próprio
+      sistema — quando entra um parceiro novo, ele aparece aqui sozinho.
+    </p>
+    <div class="lojas revela" id="lojas-grade"></div>
+    <div class="botoes revela" style="margin-top:2.2rem">
+      <a class="btn btn-cheio" href="https://clientes.inksadelivery.com.br">Ver o cardápio da cidade</a>
+    </div>
   </div>
 </section>
 
@@ -1523,6 +1596,84 @@
              fora da página. Silêncio é melhor que um contador escrito "0". */
           if (d && d.publicar && d.total > 0) mostraNumeros(d);
         })
+        .catch(function () {});
+    }
+
+    /* Vitrine de lojas -------------------------------------------------- */
+    var secaoLojas = document.getElementById("secao-lojas");
+
+    /* Rótulo do segmento. Espelha utils/segments.js do app do cliente — se
+       nascer segmento novo lá e não entrar aqui, aparece o valor cru
+       ("conveniencia"), que é feio mas honesto; nunca some e nunca mente. */
+    var SEGMENTOS = {
+      restaurante: "Restaurante", farmacia: "Farmácia", mercado: "Mercado",
+      padaria: "Padaria", cafeteria: "Cafeteria", pet: "Pet",
+      conveniencia: "Conveniência", bebidas: "Bebidas"
+    };
+
+    function cartaoDeLoja(loja) {
+      var nome = (loja.trade_name || loja.restaurant_name || "").trim();
+      if (!nome) return null;
+
+      var a = document.createElement("a");
+      a.className = "loja";
+      a.href = "https://clientes.inksadelivery.com.br";
+
+      var marca = document.createElement("div");
+      marca.className = "marca";
+      if (loja.logo_url) {
+        var img = document.createElement("img");
+        img.src = loja.logo_url;
+        img.alt = "";              /* decorativa: o nome vem escrito logo abaixo */
+        img.loading = "lazy";
+        img.decoding = "async";
+        /* Logo que não carrega vira a inicial, não um quadrado vazio. */
+        img.onerror = function () { marca.innerHTML = "<b>" + nome.charAt(0).toUpperCase() + "</b>"; };
+        marca.appendChild(img);
+      } else {
+        marca.innerHTML = "<b>" + nome.charAt(0).toUpperCase() + "</b>";
+      }
+
+      var n = document.createElement("span");
+      n.className = "nome";
+      n.textContent = nome;
+
+      a.appendChild(marca);
+      a.appendChild(n);
+
+      var seg = SEGMENTOS[loja.segment] || loja.segment;
+      if (seg) {
+        var s = document.createElement("span");
+        s.className = "seg";
+        s.textContent = seg;
+        a.appendChild(s);
+      }
+      return a;
+    }
+
+    function mostraLojas(lista) {
+      var grade = document.getElementById("lojas-grade");
+      if (!grade) return;
+
+      var cartoes = lista.map(cartaoDeLoja).filter(Boolean);
+      if (!cartoes.length) return;   /* nada de verdade pra mostrar: some */
+
+      cartoes.forEach(function (c) { grade.appendChild(c); });
+      secaoLojas.hidden = false;
+      /* Mesma armadilha do contador: a seção nasceu com `hidden`, então o
+         observador do .revela já passou por ela sem ver nada. Sem marcar à
+         mão, a seção aparece mas o conteúdo fica invisível. */
+      secaoLojas.querySelectorAll(".revela").forEach(function (el) { el.classList.add("vis"); });
+    }
+
+    if (secaoLojas && "fetch" in window) {
+      fetch(API + "/api/restaurants")
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var lista = d && (d.data || d.restaurants || d);
+          if (Array.isArray(lista) && lista.length) mostraLojas(lista);
+        })
+        /* Silêncio de propósito: ver o comentário no topo da seção. */
         .catch(function () {});
     }
 
