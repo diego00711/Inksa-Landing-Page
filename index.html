@@ -128,20 +128,35 @@
   .trilho { position: absolute; left: 0; bottom: -1px; height: 2px; background: var(--brasa); width: 0; }
 
   .heroi { position: relative; min-height: 80vh; display: grid; align-items: center; overflow: hidden; background: var(--breu); }
-  .heroi video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .52; }
+  .heroi-fundo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .52;
+                 /* A aproximação é LENTA e CURTA de propósito: 22s pra 4% de
+                    zoom. O olho não vê o movimento acontecer, sente que a
+                    imagem está viva. Zoom rápido ou grande vira anúncio de
+                    imobiliária e tira a atenção do título, que é o que tem
+                    que ser lido nos primeiros segundos. */
+                 animation: respira 22s ease-in-out infinite alternate;
+                 transform-origin: 68% 50%; }
+  @keyframes respira { from { transform: scale(1); } to { transform: scale(1.04); } }
+  /* Quem pediu menos movimento não recebe movimento nenhum. */
+  @media (prefers-reduced-motion: reduce) { .heroi-fundo { animation: none; } }
   .heroi .veu { position: absolute; inset: 0;
        background: linear-gradient(100deg, rgba(14,21,25,.95) 0%, rgba(14,21,25,.78) 46%, rgba(14,21,25,.2) 100%); }
   /* No computador o véu escurece da esquerda pra direita: o texto fica na
      parte escura e a cena aparece à direita, que é a graça. No celular não
      existe "direita livre" — o texto ocupa a largura toda e ia parar em cima
-     da parte clara. Pior: o vídeo tem o logo e frases GRAVADAS nele, então o
-     que aparecia atrás do título era outro texto, grande e cortado.
-     Aqui o véu vira vertical e mais fechado: a cena continua sugerida, mas
-     quem manda na leitura é o título. */
+     da parte clara. Por isso o véu vira VERTICAL: claro em cima, fechando pra
+     baixo, onde mora o texto corrido.
+
+     ⚠️ O véu era mais pesado (.84/.92/.97 com a imagem em .38) por um segundo
+     motivo que ACABOU: o vídeo tinha logo e frases gravadas, e o que aparecia
+     atrás do título era outro texto, grande e cortado — só afogando dava pra
+     esconder. Com o quadro limpo no lugar do vídeo, sobrou só a razão de
+     legibilidade, que pede bem menos. A cena agora aparece de verdade no
+     celular, que é por onde quase todo mundo chega pelo Instagram. */
   @media (max-width: 52rem) {
-    .heroi .veu { background: linear-gradient(180deg, rgba(14,21,25,.84) 0%,
-                              rgba(14,21,25,.92) 45%, rgba(14,21,25,.97) 100%); }
-    .heroi video { opacity: .38; }
+    .heroi .veu { background: linear-gradient(180deg, rgba(14,21,25,.62) 0%,
+                              rgba(14,21,25,.86) 48%, rgba(14,21,25,.95) 100%); }
+    .heroi-fundo { opacity: .5; }
   }
   /* ⚠️ O PADDING LATERAL AQUI É 1.5rem, NÃO 0 (corrigido em 09/09/2026).
      Este elemento é `class="conteudo dentro"`, e .dentro dá o respiro lateral
@@ -586,7 +601,27 @@
 </header>
 
 <section class="heroi">
-  <video autoplay muted loop playsinline src="/assets/b470075c3c.mp4" aria-hidden="true"></video>
+  <!-- ⚠️ ERA UM VÍDEO, E O VÍDEO MENTIA.
+       O teaser (assets/b470075c3c.mp4) tem texto GRAVADO nele: "PRÉ-CADASTRO
+       ABERTO", "6 MESES DE COMISSÃO PELA METADE", "PREPARE-SE, LAGES! ESTÁ
+       CHEGANDO" e um segundo logo "inksa" gigante. Três problemas de uma vez:
+       o texto atravessava o título por baixo, o logo do vídeo brigava com o
+       logo de verdade ao lado, e a mensagem está ERRADA hoje — não é mais
+       pré-cadastro, os apps estão publicados e já tem loja vendendo.
+
+       Tentei esconder por corte e por véu mais pesado: não dá. O texto
+       percorre o quadro inteiro ao longo dos 8 segundos, então qualquer
+       enquadramento pega alguma letra em algum momento.
+
+       O que resolveu: o PRIMEIRO QUADRO é limpo — só a cena, sem letra
+       nenhuma. Ele virou esta imagem (37 KB contra 178 KB do vídeo, e sem
+       espera de decodificação: a primeira tela aparece na hora).
+
+       O movimento não se perdeu, mudou de lugar: a aproximação lenta abaixo
+       dá vida sem afirmar nada. Quando existir filmagem sem letra, é só
+       voltar a <video> — o mp4 continua em assets/. -->
+  <img class="heroi-fundo" src="/assets/139995ae36.jpg" alt=""
+       width="960" height="540" fetchpriority="high" decoding="async">
   <div class="veu"></div>
   <div class="conteudo dentro">
     <img class="heroi-logo" src="/assets/inksa-marca.png" alt="Inksa Delivery" width="365" height="224" decoding="async">
