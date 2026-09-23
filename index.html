@@ -322,6 +322,25 @@
   .atalhos button:hover { border-color: var(--brasa); color: var(--brasa-texto); }
   .atalhos button[aria-pressed="true"] { background: var(--brasa); border-color: var(--brasa); color: #fff; }
 
+  /* ── ALVO DE DEDO NO CELULAR ──────────────────────────────────────────────
+     Medido em 390px: as pílulas de peso tinham 28px de altura, as abas do
+     Clube 36px e o botão do topo 41px. O mínimo confortável é 44px — abaixo
+     disso o dedo erra, e errar num controle que existe pra ser explorado
+     (escolher "Botijão" pra ver o frete mudar) é o caminho curto pra pessoa
+     desistir da demonstração.
+
+     Só no celular: 44px numa fila de pílulas no computador fica pesado, e lá
+     quem aponta é o mouse, que não erra.
+
+     `min-height` + flex, não padding: padding empurraria o texto e mudaria o
+     desenho da pílula; assim ela só cresce a caixa e centraliza o que já
+     estava lá. Os botões grandes (55px) não sentem nada. */
+  @media (max-width: 52rem) {
+    .atalhos button, .aba, .btn {
+      min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+    }
+  }
+
   /* A ESCADA, em vez de ícones de veículo. Ícone diria QUAL; a escada diz
      POR QUÊ — a pessoa vê o limite de cada um e entende a regra sozinha.
 
