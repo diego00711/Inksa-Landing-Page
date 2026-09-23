@@ -1623,12 +1623,23 @@
       marca.className = "marca";
       if (loja.logo_url) {
         var img = document.createElement("img");
-        img.src = loja.logo_url;
         img.alt = "";              /* decorativa: o nome vem escrito logo abaixo */
-        img.loading = "lazy";
         img.decoding = "async";
-        /* Logo que não carrega vira a inicial, não um quadrado vazio. */
+
+        /* ⚠️ SEM loading="lazy" AQUI, e não é descuido.
+           A seção nasce com `hidden`, então na hora em que este <img> é criado
+           ele não tem caixa nenhuma e nunca chega a "entrar na tela" — o
+           navegador simplesmente NÃO PEDE a imagem. Medido: a URL respondia
+           200 com 218 KB de JPEG e a tag ficava com `currentSrc` vazio e
+           `complete: false`, mesmo depois de rolar até ela. Cinco quadrados
+           cinza no lugar das marcas dos parceiros.
+           Lazy não economizaria nada aqui: são poucas logos, numa seção que só
+           existe DEPOIS da resposta da API — o adiamento já aconteceu. */
+
+        /* onerror ANTES do src: com a imagem em cache o erro dispara na mesma
+           hora, e um handler ligado depois disso nunca é chamado. */
         img.onerror = function () { marca.innerHTML = "<b>" + nome.charAt(0).toUpperCase() + "</b>"; };
+        img.src = loja.logo_url;
         marca.appendChild(img);
       } else {
         marca.innerHTML = "<b>" + nome.charAt(0).toUpperCase() + "</b>";
