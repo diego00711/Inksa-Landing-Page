@@ -334,11 +334,22 @@
 
      `min-height` + flex, não padding: padding empurraria o texto e mudaria o
      desenho da pílula; assim ela só cresce a caixa e centraliza o que já
-     estava lá. Os botões grandes (55px) não sentem nada. */
+     estava lá. Os botões grandes (55px) não sentem nada.
+
+     ⚠️ `.btn` NÃO LEVA `display` AQUI, e a razão custou caro: `.btn` já é
+     `inline-flex` lá em cima, então declarar de novo não mudava nada de
+     útil — mas ATROPELAVA o `.so-largo { display: none }` do cabeçalho, que
+     tem a mesma especificidade e vem ANTES nesta folha. O efeito foi
+     ressuscitar no celular os dois botões que o cabeçalho esconde de
+     propósito, e o topo do telefone voltou a ter três botões quebrando em
+     duas linhas cada — exatamente o que aquela regra existe pra evitar.
+     Regra geral daqui: em media query de celular, só declare `display` em
+     seletor que não tem chance de estar escondido por outra regra. */
   @media (max-width: 52rem) {
-    .atalhos button, .aba, .btn {
+    .atalhos button, .aba {
       min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
     }
+    .btn { min-height: 44px; justify-content: center; }
   }
 
   /* A ESCADA, em vez de ícones de veículo. Ícone diria QUAL; a escada diz
