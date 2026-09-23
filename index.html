@@ -258,7 +258,17 @@
   .nivel li { font-size: .9rem; color: var(--musgo); margin-bottom: .3rem; }
   .nivel.dia { border-color: var(--brasa); box-shadow: 0 0 0 3px var(--brasa-veu); }
 
-  .foto { width: 100%; border-radius: 5px; display: block; border: 1px solid var(--linha); }
+  /* ⚠️ `height: auto` NÃO É ENFEITE — sem ele a foto estica.
+     As tags <img> daqui trazem width/height de verdade (900x593), e isso é
+     proposital: o navegador reserva o espaço certo antes de a imagem baixar e
+     a página não pula. Só que esses atributos entram como estilo de baixa
+     prioridade: o `width: 100%` daqui vence a largura, e a ALTURA continua
+     valendo os 593px do atributo. Resultado: largura acompanha a coluna,
+     altura fica cravada, e a pessoa da foto aparece esticada — foi o que
+     aconteceu na seção do Parceiro Fundador.
+     Regra: toda vez que o CSS mexer em UMA das duas dimensões de uma <img>
+     que declara as duas, precisa soltar a outra. */
+  .foto { width: 100%; height: auto; border-radius: 5px; display: block; border: 1px solid var(--linha); }
 
   /* ── A BALANÇA ──────────────────────────────────────────────────────────
      Esta seção AFIRMAVA a coisa mais distintiva da plataforma — "calcula
