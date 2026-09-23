@@ -686,7 +686,11 @@
      verdade. A API é no Render e leva alguns segundos; se falhar, a seção
      inteira não existe. Vitrine vazia num site que promete cidade movimentada
      é pior do que não ter vitrine. -->
-<section class="faixa" id="secao-lojas" hidden>
+<!-- `cinza` e não branco: a seção de cima (#perfis) já é branca, e duas faixas
+     brancas coladas viram um bloco só de 10rem de altura — o olho perde a
+     divisão e a vitrine parece rodapé da seção anterior. A página inteira
+     alterna fundo por isso. -->
+<section class="faixa cinza" id="secao-lojas" hidden>
   <div class="dentro">
     <p class="rotulo revela">Quem já está aqui</p>
     <h2 class="revela">Já dá pra pedir<br>destas lojas.</h2>
@@ -1228,7 +1232,24 @@
       var obs = new IntersectionObserver(function (ents) {
         ents.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("vis"); obs.unobserve(e.target); } });
       }, { rootMargin: "0px 0px -12% 0px" });
-      alvos.forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 60 + "ms"; obs.observe(el); });
+      /* ⚠️ O ATRASO CONTA DENTRO DA SEÇÃO, NÃO DA PÁGINA.
+         Antes era `(i % 4) * 60`, com `i` correndo pela lista inteira de
+         .revela do documento. O atraso de cada elemento saía da posição dele
+         na PÁGINA, que não tem relação com a posição dele na seção: o título
+         de um bloco podia pegar 180ms e o parágrafo logo abaixo 0ms, e o de
+         baixo aparecia primeiro. Escalonamento fora de ordem não lê como
+         ritmo, lê como falha de carregamento.
+         Contando por seção, cada bloco entra de cima pra baixo. */
+      var porSecao = new Map();
+      alvos.forEach(function (el) {
+        var dono = el.closest("section") || document.body;
+        var n = porSecao.get(dono) || 0;
+        /* Teto em 4 degraus: numa seção com 12 itens, um atraso crescente
+           deixaria o último quase um segundo atrás e pareceria travado. */
+        el.style.transitionDelay = Math.min(n, 3) * 60 + "ms";
+        porSecao.set(dono, n + 1);
+        obs.observe(el);
+      });
     } else { alvos.forEach(function (el) { el.classList.add("vis"); }); }
 
     /* Vídeo que só baixa quando chega a vez dele (data-src).
@@ -1532,6 +1553,7 @@
 
     function mostraNumeros(d) {
       secaoNum.hidden = false;
+      alternaFundo(secaoNum);
       /* A seção nasce com hidden, então o observador do .revela já passou por
          ela sem ver nada. Marca à mão, senão o conteúdo fica invisível. */
       secaoNum.querySelectorAll(".revela").forEach(function (el) { el.classList.add("vis"); });
@@ -1608,6 +1630,50 @@
           if (d && d.publicar && d.total > 0) mostraNumeros(d);
         })
         .catch(function () {});
+    }
+
+    /* Alternância de fundo das seções que APARECEM DEPOIS ---------------- */
+    /*
+       Três seções desta página nascem `hidden` e são reveladas pelo JS quando
+       o dado chega (vitrine de lojas, contador, prestação de contas). Com
+       fundo cravado no HTML isso não tem solução estática: a cor certa de cada
+       uma depende de QUAIS das outras apareceram, e são oito combinações.
+       Já havia duas colisões esperando — o contador é `cinza` logo depois de
+       "Somos poucos", que também é `cinza`, e a prestação de contas é branca
+       logo antes de outra branca.
+
+       Duas faixas da mesma cor coladas viram um bloco só: o olho perde a
+       divisão e a segunda parece rodapé da primeira.
+
+       Aqui a cor é decidida na hora de revelar, olhando a seção visível
+       anterior. `creme` e `escura` não entram no rodízio — são acentos
+       escolhidos a dedo (o Fundador e o Inksa Social) e mandam mais que a
+       alternância.
+    */
+    var ACENTOS = ["creme", "escura"];
+
+    function alternaFundo(sec, _profundidade) {
+      if (!sec || ACENTOS.some(function (c) { return sec.classList.contains(c); })) return;
+      var ant = sec.previousElementSibling;
+      while (ant && (ant.hidden || !ant.classList.contains("faixa"))) ant = ant.previousElementSibling;
+      if (!ant) return;
+      /* Depois de um acento (creme/escura) o branco sempre respira melhor. */
+      var anteriorEscura = ACENTOS.some(function (c) { return ant.classList.contains(c); });
+      var querCinza = !anteriorEscura && !ant.classList.contains("cinza");
+      sec.classList.toggle("cinza", querCinza);
+
+      /* ⚠️ A CORREÇÃO TEM QUE DESCER. Arrumar só a seção revelada empurra a
+         colisão pra baixo: a prestação de contas é branca e a seção seguinte
+         também, então revelar uma consertava o encontro de cima e criava o de
+         baixo. Testado nas 8 combinações de seções visíveis — 4 falhavam sem
+         esta parte, nenhuma falha com ela.
+         A profundidade existe só como cinto de segurança: a página tem 14
+         faixas, e uma recursão solta aqui viraria travamento em vez de bug
+         visual. */
+      if ((_profundidade || 0) > 20) return;
+      var prox = sec.nextElementSibling;
+      while (prox && (prox.hidden || !prox.classList.contains("faixa"))) prox = prox.nextElementSibling;
+      if (prox) alternaFundo(prox, (_profundidade || 0) + 1);
     }
 
     /* Vitrine de lojas -------------------------------------------------- */
@@ -1717,6 +1783,7 @@
 
       cartoes.forEach(function (c) { grade.appendChild(c); });
       secaoLojas.hidden = false;
+      alternaFundo(secaoLojas);
       /* Mesma armadilha do contador: a seção nasceu com `hidden`, então o
          observador do .revela já passou por ela sem ver nada. Sem marcar à
          mão, a seção aparece mas o conteúdo fica invisível. */
@@ -1828,6 +1895,7 @@
 
     function mostraContas(d) {
       secaoContas.hidden = false;
+      alternaFundo(secaoContas);
       secaoContas.querySelectorAll(".revela").forEach(function (el) { el.classList.add("vis"); });
 
       poe("t-pedidos", d.pedidos.toLocaleString("pt-BR"));
