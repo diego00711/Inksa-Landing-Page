@@ -690,10 +690,13 @@
   <div class="dentro">
     <p class="rotulo revela">Quem já está aqui</p>
     <h2 class="revela">Já dá pra pedir<br>destas lojas.</h2>
-    <p class="apagado revela" style="margin-top:1.2rem;max-width:52ch">
-      Negócios de Lages que já estão no aplicativo. A lista sai do próprio
-      sistema — quando entra um parceiro novo, ele aparece aqui sozinho.
-    </p>
+    <!-- ⚠️ A FRASE DAS CIDADES É ESCRITA PELO JS, não aqui.
+         Esta lista chega SEM filtro de cidade: o app do cliente filtra por
+         raio porque manda a coordenada dele, e o site não manda nenhuma. Ou
+         seja, no dia em que entrar a primeira loja de fora, ela aparece aqui
+         junto — e qualquer cidade cravada neste HTML vira mentira sozinha,
+         sem ninguém perceber. O texto se monta a partir do que desceu. -->
+    <p class="apagado revela" id="lojas-cidades" style="margin-top:1.2rem;max-width:52ch"></p>
     <div class="lojas revela" id="lojas-grade"></div>
     <div class="botoes revela" style="margin-top:2.2rem">
       <a class="btn btn-cheio" href="https://clientes.inksadelivery.com.br">Ver o cardápio da cidade</a>
@@ -930,19 +933,27 @@
         <ul><li>4% de desconto (teto R$ 8)</li><li>Cupons em primeira mão</li><li>Prioridade no suporte</li></ul></div>
     </div>
 
+    <!-- ⚠️ O NÍVEL DO PARCEIRO É MEDIDO EM REAIS FATURADOS, NÃO EM PEDIDOS.
+         Até 22/09/2026 esta tabela dizia "3 / 10 / 25 / 60 pedidos por mês" —
+         herança da regra antiga. O sistema mudou para faturamento e o site
+         não acompanhou, então um parceiro que fizesse 60 pedidos pequenos
+         esperava Diamante e caía em Bronze. Os números abaixo são REDE DE
+         SEGURANÇA: quem manda é /api/club/levels, e o JS reescreve esta
+         tabela assim que a resposta chega. Se a API cair, o visitante vê
+         estes valores — então mantenha-os certos, não invente. -->
     <div class="niveis" id="par" hidden>
-      <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">3 pedidos/mês</span></div>
-        <ul><li>Selo no perfil da loja</li></ul></div>
-      <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">10 pedidos/mês</span></div>
-        <ul><li>Selo Prata</li></ul></div>
-      <div class="nivel"><div class="top"><span class="nome">🥇 Ouro</span><span class="meta">25 pedidos/mês</span></div>
-        <ul><li>Destaque na listagem do app</li></ul></div>
-      <div class="nivel dia"><div class="top"><span class="nome">💎 Diamante</span><span class="meta">60 pedidos/mês</span></div>
-        <ul><li>Destaque máximo na vitrine</li><li>Prioridade no suporte</li></ul></div>
+      <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">Nível inicial</span></div>
+        <ul><li>Selo Bronze</li></ul></div>
+      <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">R$ 2.500/mês</span></div>
+        <ul><li>Comissão de 14% em vez de 15%</li></ul></div>
+      <div class="nivel"><div class="top"><span class="nome">🥇 Ouro</span><span class="meta">R$ 5.000/mês</span></div>
+        <ul><li>Comissão de 12% em vez de 15%</li><li>Destaque na listagem para os clientes</li></ul></div>
+      <div class="nivel dia"><div class="top"><span class="nome">💎 Diamante</span><span class="meta">R$ 7.500/mês</span></div>
+        <ul><li>Comissão de 10% em vez de 15%</li><li>Destaque na listagem para os clientes</li><li>Prioridade no suporte</li></ul></div>
     </div>
 
     <div class="niveis" id="ent" hidden>
-      <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">3 entregas/mês</span></div>
+      <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">5 entregas/mês</span></div>
         <ul><li>Selo Bronze</li></ul></div>
       <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">10 entregas/mês</span></div>
         <ul><li>Fica com 98% do frete</li></ul></div>
@@ -1601,6 +1612,9 @@
 
     /* Vitrine de lojas -------------------------------------------------- */
     var secaoLojas = document.getElementById("secao-lojas");
+    /* Há mais de uma cidade na lista? Decidido em mostraLojas, lido pelos
+       cartões. Nasce falso: com uma cidade só, o cartão não repete o nome. */
+    var varias = false;
 
     /* Rótulo do segmento. Espelha utils/segments.js do app do cliente — se
        nascer segmento novo lá e não entrar aqui, aparece o valor cru
@@ -1653,21 +1667,53 @@
       a.appendChild(n);
 
       var seg = SEGMENTOS[loja.segment] || loja.segment;
-      if (seg) {
+      /* A cidade só entra quando existe mais de uma. Com uma cidade só,
+         repetir "Lages" em cada cartão é ruído: quem está lendo já sabe. */
+      var partes = [seg];
+      if (varias && loja.address_city) partes.push(loja.address_city.trim());
+      var texto = partes.filter(Boolean).join(" · ");
+      if (texto) {
         var s = document.createElement("span");
         s.className = "seg";
-        s.textContent = seg;
+        s.textContent = texto;
         a.appendChild(s);
       }
       return a;
+    }
+
+    /* "Negócios de Lages", "de Lages e Correia Pinto", "de Lages, X e mais 3
+       cidades" — a frase cresce sozinha conforme a Inksa sai da cidade. */
+    function fraseDeCidades(cidades) {
+      if (!cidades.length) return "Negócios que já estão no aplicativo.";
+      if (cidades.length === 1) return "Negócios de " + cidades[0] + " que já estão no aplicativo.";
+      if (cidades.length === 2) return "Negócios de " + cidades[0] + " e " + cidades[1] + ", já no aplicativo.";
+      if (cidades.length === 3) return "Negócios de " + cidades[0] + ", " + cidades[1] + " e " + cidades[2] + ", já no aplicativo.";
+      return "Negócios de " + cidades[0] + ", " + cidades[1] +
+             " e mais " + (cidades.length - 2) + " cidades, já no aplicativo.";
     }
 
     function mostraLojas(lista) {
       var grade = document.getElementById("lojas-grade");
       if (!grade) return;
 
+      /* Cidades distintas, na ordem em que aparecem. Definido ANTES de montar
+         os cartões porque `cartaoDeLoja` consulta `varias` pra decidir se
+         escreve a cidade. */
+      var cidades = [];
+      lista.forEach(function (l) {
+        var c = (l.address_city || "").trim();
+        if (c && cidades.indexOf(c) === -1) cidades.push(c);
+      });
+      varias = cidades.length > 1;
+
       var cartoes = lista.map(cartaoDeLoja).filter(Boolean);
       if (!cartoes.length) return;   /* nada de verdade pra mostrar: some */
+
+      var legenda = document.getElementById("lojas-cidades");
+      if (legenda) {
+        legenda.textContent = fraseDeCidades(cidades) +
+          " A lista sai do próprio sistema — quando entra um parceiro novo, ele aparece aqui sozinho.";
+      }
 
       cartoes.forEach(function (c) { grade.appendChild(c); });
       secaoLojas.hidden = false;
@@ -1687,6 +1733,86 @@
         /* Silêncio de propósito: ver o comentário no topo da seção. */
         .catch(function () {});
     }
+
+    /* Clube Inksa: a tabela vem do ar ----------------------------------- */
+    /*
+       Os níveis são editáveis no admin (/clube) sem deploy, e esta página era
+       o quinto lugar que repetia os mesmos números à mão. Deu no que tinha que
+       dar: quando a régua do parceiro mudou de "pedidos por mês" para "reais
+       faturados", quatro lugares acompanharam e o site ficou meses dizendo
+       "60 pedidos/mês" para um nível que hoje é R$ 7.500 de faturamento.
+
+       Agora a tabela se reescreve a partir de /api/club/levels. A API já
+       resolve as duas coisas difíceis: manda `unit` ("brl" ou "orders"), então
+       a unidade não é chutada aqui; e manda `benefits` já em português, então
+       um benefício novo no admin aparece no site sem ninguém tocar no HTML.
+
+       O HTML continua tendo a tabela escrita: ela é a rede se a API não
+       responder. Por isso precisa ficar CERTA — ver o aviso lá em cima.
+    */
+    var ABAS_CLUBE = { cli: "client", par: "restaurant", ent: "delivery" };
+
+    function metaDoNivel(n, audiencia) {
+      var min = Number(n.min_orders);
+      if (!isFinite(min) || min <= 0) return "Nível inicial";
+      if (n.unit === "brl") {
+        return "R$ " + Math.round(min).toLocaleString("pt-BR") + "/mês";
+      }
+      /* Entregador conta ENTREGA; cliente e parceiro contam PEDIDO. Palavra
+         errada aqui faz o entregador achar que precisa comprar no app. */
+      var palavra = audiencia === "delivery"
+        ? (min === 1 ? "entrega" : "entregas")
+        : (min === 1 ? "pedido" : "pedidos");
+      return min.toLocaleString("pt-BR") + " " + palavra + "/mês";
+    }
+
+    function pintaNiveis(caixa, niveis, audiencia) {
+      var frag = document.createDocumentFragment();
+      niveis.forEach(function (n, i) {
+        var d = document.createElement("div");
+        /* `dia` é a classe de destaque do último nível, que já existia no
+           HTML. Continua sendo o último — mesmo que um dia sejam cinco. */
+        d.className = "nivel" + (i === niveis.length - 1 ? " dia" : "");
+
+        var top = document.createElement("div");
+        top.className = "top";
+        var nome = document.createElement("span");
+        nome.className = "nome";
+        nome.textContent = ((n.emoji || "") + " " + (n.label || n.name || "")).trim();
+        var meta = document.createElement("span");
+        meta.className = "meta";
+        meta.textContent = metaDoNivel(n, audiencia);
+        top.appendChild(nome); top.appendChild(meta);
+
+        var ul = document.createElement("ul");
+        (n.benefits || []).forEach(function (b) {
+          var li = document.createElement("li");
+          li.textContent = b;
+          ul.appendChild(li);
+        });
+
+        d.appendChild(top);
+        d.appendChild(ul);
+        frag.appendChild(d);
+      });
+      caixa.innerHTML = "";
+      caixa.appendChild(frag);
+    }
+
+    Object.keys(ABAS_CLUBE).forEach(function (id) {
+      var caixa = document.getElementById(id);
+      if (!caixa || !("fetch" in window)) return;
+      var audiencia = ABAS_CLUBE[id];
+      fetch(API + "/api/club/levels?audience=" + audiencia)
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var niveis = d && (d.data || d.levels || d);
+          /* Só troca se veio nível de verdade. Resposta vazia deixaria a
+             seção em branco, e aí a rede do HTML não teria servido pra nada. */
+          if (Array.isArray(niveis) && niveis.length) pintaNiveis(caixa, niveis, audiencia);
+        })
+        .catch(function () {});
+    });
 
     /* Prestação de contas ---------------------------------------------- */
     var secaoContas = document.getElementById("secao-contas");
