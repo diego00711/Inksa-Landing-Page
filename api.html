@@ -125,7 +125,7 @@
        COMPORTAMENTO do estoque (a Inksa passou a dar baixa na venda), e isso
        é documentação, não versão. Bump de versão aqui obrigaria todo
        integrador a conferir o que quebrou, e não quebrou nada. -->
-  <p class="data">Versão 1.0 &middot; Atualizada em 21 de setembro de 2026</p>
+  <p class="data">Versão 1.0 &middot; Atualizada em 24 de setembro de 2026</p>
 </header>
 
 <div class="dentro">
@@ -300,6 +300,31 @@ curl -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
 <p>São os três passos da cozinha, nesta ordem:</p>
 
 <pre><code>pending  ──aceitar──▶  accepted  ──preparar──▶  preparing  ──pronto──▶  ready</code></pre>
+
+<h3>Se a loja faz a própria entrega</h3>
+
+<div class="rota"><span class="verbo">POST</span><span class="caminho">/pedidos/&lt;número&gt;/saiu-para-entrega</span></div>
+
+<p>
+  Existe um quarto passo, e ele vale <strong>só para loja que entrega com gente
+  dela</strong>. Nesse caso o fluxo continua depois do <code>pronto</code>:
+</p>
+
+<pre><code>ready  ──saiu-para-entrega──▶  delivering</code></pre>
+
+<div class="aviso">
+  <strong>Na entrega feita pela Inksa, esta rota recusa.</strong> A resposta é
+  <code>409</code> com <code>"codigo": "entrega_da_plataforma"</code>. Ali quem
+  marca a saída é o entregador, pelo aplicativo dele — o sistema da loja não
+  tem como saber quando ele pegou o pedido.
+</div>
+
+<p>
+  <strong>Confirmar a entrega continua fora da API</strong>, inclusive na entrega
+  própria: o cliente mostra um código de quatro dígitos e alguém da loja digita
+  no aplicativo. Esse código é a única prova de que o pedido chegou, e é por isso
+  que ele não vira uma chamada de API.
+</p>
 
 <p>
   <code>aceitar</code> aceita um corpo opcional com a previsão de preparo:
@@ -496,10 +521,16 @@ curl -H <span class="str">"Authorization: Bearer $CHAVE"</span> \
 </p>
 
 <p>
-  <strong>Marcar "saiu para entrega" e "entregue".</strong> Essas duas passam por
-  um código numérico conferido entre entregador, loja e cliente — é o que prova
-  que a entrega aconteceu. Uma rota de API que pulasse o código permitiria
-  fechar um pedido sem entregar nada.
+  <strong>Marcar "entregue".</strong> Passa por um código de quatro dígitos que o
+  cliente mostra — é o que prova que a entrega aconteceu. Uma rota de API que
+  pulasse o código permitiria fechar um pedido sem entregar nada.
+</p>
+
+<p>
+  <strong>"Saiu para entrega" saiu desta lista</strong> e virou rota, mas só para
+  loja com entrega própria — está logo acima, em
+  <strong>Mudar o status</strong>. O motivo de estar fora era o código de
+  entrega, e o código só existe quando quem entrega é o entregador da Inksa.
 </p>
 
 <p>
