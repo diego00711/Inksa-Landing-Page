@@ -776,14 +776,58 @@
 <section class="faixa creme" id="fundador">
   <div class="dentro duo meio">
     <div>
-      <p class="rotulo revela">Promoção de lançamento</p>
-      <h2 class="revela">Parceiro Fundador:<br>metade da comissão.</h2>
-      <p class="grande revela" style="margin-top:1.4rem">
-        Quem entra agora paga <b>7,5%</b> em vez de 15% pelos
-        <b>seis primeiros meses</b>. Não é desconto de primeiro pedido nem cupom
-        que expira em trinta dias: é metade da comissão por meio ano, contada a
-        partir do dia em que você entra.
-      </p>
+      <!-- ⚠️ A OFERTA COM PRAZO VENCE SOZINHA — NÃO DEPENDE DE NINGUÉM LEMBRAR.
+           Em 31/08/2026 ficou decidido não cravar data na chamada flutuante,
+           porque ela viaja encaminhada no WhatsApp e data vencida chega na mão
+           de quem recebe dois dias depois. Aqui a data é útil (a pessoa está
+           lendo a página AGORA), então em vez de tirar a data, o bloco troca de
+           discurso quando o prazo passa: o `#oferta-prazo` some e o
+           `#oferta-padrao` aparece. Mesma regra da arte de prospecção.
+           Para estender a campanha, mude só o `data-ate` abaixo. -->
+      <div id="oferta-prazo" data-ate="2026-09-30">
+        <p class="rotulo revela">Oferta de lançamento &middot; cadastro até 30/09</p>
+        <h2 class="revela">Sem repasse nenhum<br>até 31 de dezembro.</h2>
+        <p class="grande revela" style="margin-top:1.4rem">
+          Quem cadastrar a loja até <b>30 de setembro</b> não paga repasse para a
+          plataforma <b>até 31 de dezembro</b>. Vende, recebe e fica com tudo.
+        </p>
+        <p class="grande revela" style="margin-top:1rem">
+          Depois disso entra o <b>Plano Fundador</b>: seis meses pagando
+          <b>7,5%</b> em vez de 15%. Não é desconto de primeiro pedido nem cupom
+          que expira em trinta dias — é metade da comissão por meio ano.
+        </p>
+      </div>
+
+      <div id="oferta-padrao" hidden>
+        <p class="rotulo revela">Promoção de lançamento</p>
+        <h2 class="revela">Parceiro Fundador:<br>metade da comissão.</h2>
+        <p class="grande revela" style="margin-top:1.4rem">
+          Quem entra agora paga <b>7,5%</b> em vez de 15% pelos
+          <b>seis primeiros meses</b>. Não é desconto de primeiro pedido nem cupom
+          que expira em trinta dias: é metade da comissão por meio ano, contada a
+          partir do dia em que você entra.
+        </p>
+      </div>
+
+      <script>
+        // Fim do dia 30/09 no fuso de Brasília: "até 30/09" vale o dia inteiro.
+        // Se der qualquer erro, NÃO esconde nada — errar mostrando as duas é
+        // feio; errar escondendo as duas deixa a seção sem título nenhum.
+        try {
+          var _bloco = document.getElementById('oferta-prazo');
+          var _venceu = new Date() > new Date(_bloco.dataset.ate + 'T23:59:59-03:00');
+          if (_venceu) {
+            _bloco.hidden = true;
+            document.getElementById('oferta-padrao').hidden = false;
+            document.querySelectorAll('[data-so-com-prazo]').forEach(function (el) {
+              el.hidden = true;
+            });
+            document.querySelectorAll('[data-sem-prazo]').forEach(function (el) {
+              el.hidden = false;
+            });
+          }
+        } catch (e) { /* mantém a oferta com prazo, que é o texto padrão */ }
+      </script>
       <p class="apagado revela" style="margin-top:1.2rem">
         A conta é simples: no começo somos nós que precisamos dos parceiros, não
         o contrário. Quem topar apostar numa plataforma nova merece pagar menos
@@ -800,8 +844,12 @@
       <span class="rotulo" style="margin-bottom:.8rem">O seu benefício</span>
       <div class="resultado" style="margin-top:0">
         <div class="linha-res"><span class="apagado">Comissão normal</span><b style="text-decoration:line-through;color:var(--musgo)">15%</b></div>
-        <div class="linha-res"><span class="apagado">Comissão de Fundador</span><b style="color:var(--brasa-texto)">7,5%</b></div>
-        <div class="linha-res"><span class="apagado">Duração</span><b>6 meses</b></div>
+        <!-- As duas linhas do meio acompanham o bloco de texto: some uma, aparece
+             a outra, pelo mesmo script logo acima. -->
+        <div class="linha-res" data-so-com-prazo><span class="apagado">Até 31/12</span><b style="color:var(--brasa-texto)">R$ 0 de repasse</b></div>
+        <div class="linha-res" data-so-com-prazo><span class="apagado">Depois, por 6 meses</span><b style="color:var(--brasa-texto)">7,5%</b></div>
+        <div class="linha-res" data-sem-prazo hidden><span class="apagado">Comissão de Fundador</span><b style="color:var(--brasa-texto)">7,5%</b></div>
+        <div class="linha-res" data-sem-prazo hidden><span class="apagado">Duração</span><b>6 meses</b></div>
         <div class="linha-res" style="border:none"><span class="apagado">Mensalidade, adesão, fidelidade</span><b>R$ 0</b></div>
       </div>
       <div class="economia">
