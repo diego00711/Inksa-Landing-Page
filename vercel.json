@@ -1,4 +1,17 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/pedir", "destination": "https://clientes.inksadelivery.com.br/?de=tiktok", "permanent": false },
+    { "source": "/app", "destination": "https://clientes.inksadelivery.com.br/?de=bio", "permanent": false },
+    { "source": "/cliente", "destination": "https://clientes.inksadelivery.com.br", "permanent": false },
+
+    { "source": "/loja", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
+    { "source": "/parceiro", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
+    { "source": "/restaurante", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
+
+    { "source": "/moto", "destination": "https://entregadores.inksadelivery.com.br", "permanent": false },
+    { "source": "/entregar", "destination": "https://entregadores.inksadelivery.com.br", "permanent": false },
+    { "source": "/entregador", "destination": "https://entregadores.inksadelivery.com.br", "permanent": false }
+  ]
 }
