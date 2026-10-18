@@ -80,6 +80,23 @@
   }
 
   * { box-sizing: border-box; }
+
+  /* ⚠️ ESTA REGRA NÃO É ENFEITE — SEM ELA O ATRIBUTO `hidden` NÃO ESCONDE NADA.
+     O `display` padrão do `hidden` vem do folha-de-estilo do navegador, e
+     QUALQUER `display` que a gente declare depois ganha dele. Resultado: um
+     elemento com `hidden=true` continua na tela, ocupando espaço e alcançável
+     por Tab, e o JS que o escondeu parece ter funcionado.
+     Foi assim que a auditoria de 17/10/2026 achou dois defeitos de uma vez:
+       • `.niveis { display: grid }`    → as 3 abas do Clube apareciam juntas
+       • `.linha-res { display: flex }` → o quadro da oferta não trocava
+     Conferidos antes de generalizar: os 9 elementos com `hidden` nesta página
+     são todos do tipo "revela depois" (seções de números, contas, lojas, alerta
+     da balança, painéis do Clube e as linhas da oferta). Nenhum depende de
+     continuar visível, então a regra global é segura aqui.
+     O `!important` é necessário: `[hidden]` e `.niveis` têm a MESMA
+     especificidade, e sem ele quem vence é só quem vier por último no arquivo. */
+  [hidden] { display: none !important; }
+
   body { margin: 0; background: var(--fundo); color: var(--tinta); font-family: var(--corpo);
          font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   .dentro { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
@@ -783,18 +800,30 @@
            lendo a página AGORA), então em vez de tirar a data, o bloco troca de
            discurso quando o prazo passa: o `#oferta-prazo` some e o
            `#oferta-padrao` aparece. Mesma regra da arte de prospecção.
-           Para estender a campanha, mude só o `data-ate` abaixo. -->
-      <div id="oferta-prazo" data-ate="2026-09-30">
-        <p class="rotulo revela">Oferta de lançamento &middot; cadastro até 30/09</p>
+           Para estender a campanha, mude só o `data-ate` abaixo.
+
+           ⚠️ O `data-ate` TEM QUE ESPELHAR `platform_settings.embaixador_padrao_ate`
+           no banco. É ele que faz o backend cobrar zero — a página só conta a
+           mesma história. Em 17/10/2026 a data daqui estava em 30/09 enquanto o
+           banco já dizia 31/12: a auditoria leu isso como "oferta vencida no ar",
+           quando na verdade era a página atrasada em relação à campanha viva.
+           Mudar um sem o outro cria de novo dois preços pra mesma loja. -->
+      <div id="oferta-prazo" data-ate="2026-12-31">
+        <p class="rotulo revela">Oferta de lançamento &middot; até 31 de dezembro</p>
         <h2 class="revela">Sem repasse nenhum<br>até 31 de dezembro.</h2>
         <p class="grande revela" style="margin-top:1.4rem">
-          Quem cadastrar a loja até <b>30 de setembro</b> não paga repasse para a
-          plataforma <b>até 31 de dezembro</b>. Vende, recebe e fica com tudo.
+          Quem cadastrar a loja agora não paga repasse nenhum para a plataforma
+          <b>até 31 de dezembro</b>. Vende, recebe e fica com tudo.
         </p>
+        <!-- ⚠️ "seis meses DE CASA", não "seis meses DEPOIS do dia 31/12".
+             A janela do Fundador conta da marcação do parceiro, não do fim da
+             isenção — as duas correm JUNTAS. Quem entra em outubro pega zero até
+             31/12 e 7,5% até ~abril, o que dá ~3,5 meses de 7,5%, não 6. Dizer
+             "seis meses a 7,5% depois do 31/12" promete quase o dobro. -->
         <p class="grande revela" style="margin-top:1rem">
-          Depois disso entra o <b>Plano Fundador</b>: seis meses pagando
-          <b>7,5%</b> em vez de 15%. Não é desconto de primeiro pedido nem cupom
-          que expira em trinta dias — é metade da comissão por meio ano.
+          Passada a virada, você segue como <b>Parceiro Fundador</b> pagando
+          <b>7,5%</b> em vez de 15% até completar seis meses de casa. Não é
+          desconto de primeiro pedido nem cupom que expira em trinta dias.
         </p>
       </div>
 
@@ -809,25 +838,6 @@
         </p>
       </div>
 
-      <script>
-        // Fim do dia 30/09 no fuso de Brasília: "até 30/09" vale o dia inteiro.
-        // Se der qualquer erro, NÃO esconde nada — errar mostrando as duas é
-        // feio; errar escondendo as duas deixa a seção sem título nenhum.
-        try {
-          var _bloco = document.getElementById('oferta-prazo');
-          var _venceu = new Date() > new Date(_bloco.dataset.ate + 'T23:59:59-03:00');
-          if (_venceu) {
-            _bloco.hidden = true;
-            document.getElementById('oferta-padrao').hidden = false;
-            document.querySelectorAll('[data-so-com-prazo]').forEach(function (el) {
-              el.hidden = true;
-            });
-            document.querySelectorAll('[data-sem-prazo]').forEach(function (el) {
-              el.hidden = false;
-            });
-          }
-        } catch (e) { /* mantém a oferta com prazo, que é o texto padrão */ }
-      </script>
       <p class="apagado revela" style="margin-top:1.2rem">
         A conta é simples: no começo somos nós que precisamos dos parceiros, não
         o contrário. Quem topar apostar numa plataforma nova merece pagar menos
@@ -847,7 +857,9 @@
         <!-- As duas linhas do meio acompanham o bloco de texto: some uma, aparece
              a outra, pelo mesmo script logo acima. -->
         <div class="linha-res" data-so-com-prazo><span class="apagado">Até 31/12</span><b style="color:var(--brasa-texto)">R$ 0 de repasse</b></div>
-        <div class="linha-res" data-so-com-prazo><span class="apagado">Depois, por 6 meses</span><b style="color:var(--brasa-texto)">7,5%</b></div>
+        <!-- "até 6 meses DE CASA", não "por 6 meses depois do 31/12": as duas
+             janelas se sobrepõem. Mesma correção do texto ao lado. -->
+        <div class="linha-res" data-so-com-prazo><span class="apagado">Depois, até 6 meses de casa</span><b style="color:var(--brasa-texto)">7,5%</b></div>
         <div class="linha-res" data-sem-prazo hidden><span class="apagado">Comissão de Fundador</span><b style="color:var(--brasa-texto)">7,5%</b></div>
         <div class="linha-res" data-sem-prazo hidden><span class="apagado">Duração</span><b>6 meses</b></div>
         <div class="linha-res" style="border:none"><span class="apagado">Mensalidade, adesão, fidelidade</span><b>R$ 0</b></div>
@@ -860,6 +872,35 @@
     </div>
     </div>
   </div>
+
+  <!-- ⚠️ ESTE SCRIPT FICA NO FIM DA SEÇÃO, E ISSO É O CONSERTO, NÃO ESTILO.
+       Ele morava lá em cima, logo depois dos dois blocos de texto — e por isso
+       os `querySelectorAll` das linhas do quadro (que vêm DEPOIS dele no
+       documento) voltavam vazios. O texto trocava quando a oferta vencia; o
+       quadro ao lado continuava anunciando a condição antiga. Dois preços
+       diferentes na mesma tela, e nenhum erro no console.
+       Achado pela auditoria de 17/10/2026 (A01). Mantenha-o abaixo de tudo que
+       ele toca: `#oferta-prazo`, `#oferta-padrao`, `[data-so-com-prazo]` e
+       `[data-sem-prazo]`. -->
+  <script>
+    // Fim do dia no fuso de Brasília: "até 31/12" vale o dia 31 inteiro.
+    // Se der qualquer erro, NÃO esconde nada — errar mostrando as duas é
+    // feio; errar escondendo as duas deixa a seção sem título nenhum.
+    try {
+      var _bloco = document.getElementById('oferta-prazo');
+      var _venceu = new Date() > new Date(_bloco.dataset.ate + 'T23:59:59-03:00');
+      if (_venceu) {
+        _bloco.hidden = true;
+        document.getElementById('oferta-padrao').hidden = false;
+        document.querySelectorAll('[data-so-com-prazo]').forEach(function (el) {
+          el.hidden = true;
+        });
+        document.querySelectorAll('[data-sem-prazo]').forEach(function (el) {
+          el.hidden = false;
+        });
+      }
+    } catch (e) { /* mantém a oferta com prazo, que é o texto padrão */ }
+  </script>
 </section>
 
 <section class="faixa">
@@ -987,7 +1028,16 @@
         <label for="fat">Faturamento mensal em delivery</label>
         <div class="campo"><span>R$</span><input id="fat" type="text" inputmode="numeric" value="20.000"></div>
         <label for="tx" style="margin-top:1.4rem">Comissão que você paga hoje: <b id="txval" style="color:var(--brasa-texto)">25%</b></label>
-        <input id="tx" type="range" min="8" max="35" step="1" value="25" aria-label="Comissão paga hoje, em porcentagem">
+        <!-- ⚠️ O mínimo era 8%, e isso tornava impossível a comparação mais
+             importante que existe aqui. O concorrente real da Inksa na serra
+             não é marketplace: é link de cardápio que cobra MENSALIDADE e
+             comissão ZERO (Brendi, wabiz, pedir.delivery, instadelivery — ver
+             INKSA/LISTA-DE-LIGACAO.md). Com piso em 8% o lojista nessa situação
+             não conseguia se representar, e o ramo honesto do `calcula()` que
+             admite "a Inksa sai mais cara em comissão" nunca executava: era
+             código morto desde sempre. Com piso 0 ele passa a rodar, e a
+             conversa vira a verdadeira — comissão contra mensalidade. -->
+        <input id="tx" type="range" min="0" max="35" step="1" value="25" aria-label="Comissão paga hoje, em porcentagem">
         <div class="resultado">
           <div class="linha-res"><span class="apagado">Você paga hoje</span><b id="hoje">R$ 5.000</b></div>
           <div class="linha-res"><span class="apagado">Na Inksa (15%)</span><b id="inksa">R$ 3.000</b></div>
@@ -1033,13 +1083,17 @@
       Cliente, parceiro e entregador sobem de nível pela atividade do mês. Não
       é pontinho para trocar por nada: cada nível muda dinheiro ou visibilidade.
     </p>
-    <div class="abas" role="tablist">
-      <button class="aba" role="tab" aria-selected="true" data-alvo="cli">Cliente</button>
-      <button class="aba" role="tab" aria-selected="false" data-alvo="par">Parceiro</button>
-      <button class="aba" role="tab" aria-selected="false" data-alvo="ent">Entregador</button>
+    <!-- Padrão de abas da W3C (APG). Faltavam `aria-controls`, o `role=tabpanel`
+         do outro lado e o tabindex rotativo: o leitor de tela anunciava "aba"
+         sem dizer que painel ela comanda, e a seta direita não andava entre
+         elas. Auditoria de 17/10/2026 (A11). -->
+    <div class="abas" role="tablist" aria-label="Níveis do Clube por perfil">
+      <button class="aba" role="tab" id="aba-cli" aria-controls="cli" aria-selected="true"  tabindex="0"  data-alvo="cli">Cliente</button>
+      <button class="aba" role="tab" id="aba-par" aria-controls="par" aria-selected="false" tabindex="-1" data-alvo="par">Parceiro</button>
+      <button class="aba" role="tab" id="aba-ent" aria-controls="ent" aria-selected="false" tabindex="-1" data-alvo="ent">Entregador</button>
     </div>
 
-    <div class="niveis" id="cli">
+    <div class="niveis" id="cli" role="tabpanel" aria-labelledby="aba-cli" tabindex="0">
       <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">2 pedidos/mês</span></div>
         <ul><li>Cupons exclusivos das lojas</li></ul></div>
       <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">5 pedidos/mês</span></div>
@@ -1058,7 +1112,7 @@
          SEGURANÇA: quem manda é /api/club/levels, e o JS reescreve esta
          tabela assim que a resposta chega. Se a API cair, o visitante vê
          estes valores — então mantenha-os certos, não invente. -->
-    <div class="niveis" id="par" hidden>
+    <div class="niveis" id="par" role="tabpanel" aria-labelledby="aba-par" tabindex="0" hidden>
       <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">Nível inicial</span></div>
         <ul><li>Selo Bronze</li></ul></div>
       <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">R$ 2.500/mês</span></div>
@@ -1069,7 +1123,7 @@
         <ul><li>Comissão de 10% em vez de 15%</li><li>Destaque na listagem para os clientes</li><li>Prioridade no suporte</li></ul></div>
     </div>
 
-    <div class="niveis" id="ent" hidden>
+    <div class="niveis" id="ent" role="tabpanel" aria-labelledby="aba-ent" tabindex="0" hidden>
       <div class="nivel"><div class="top"><span class="nome">🥉 Bronze</span><span class="meta">5 entregas/mês</span></div>
         <ul><li>Selo Bronze</li></ul></div>
       <div class="nivel"><div class="top"><span class="nome">🥈 Prata</span><span class="meta">10 entregas/mês</span></div>
@@ -1514,6 +1568,14 @@
         elVal.textContent = fmt(kg);
         elDistVal.textContent = um(reta);
 
+        /* ⚠️ O leitor de tela lê o VALUE cru do range, não o texto ao lado —
+           e aqui o value é a posição na régua, não a grandeza. Anunciava
+           "188" para 0,8 kg (escala exponencial) e "30" para 3 km (décimos).
+           O `aria-valuetext` é o que faz o anúncio bater com o que está
+           escrito na tela. Auditoria de 17/10/2026 (A11). */
+        elPeso.setAttribute("aria-valuetext", fmt(kg) + " kg");
+        elDist.setAttribute("aria-valuetext", um(reta) + " km em linha reta");
+
         /* Quem manda no atalho aceso é o PESO, não o clique. Assim ele já nasce
            certo (a página abre em 0,8 kg = Pizza) e volta a acender sozinho se
            a pessoa arrastar de volta pra cima de um dos pesos. A tolerância
@@ -1596,14 +1658,35 @@
         });
     }
 
-    /* Abas do Clube */
-    var abas = document.querySelectorAll(".aba");
-    abas.forEach(function (b) {
-      b.addEventListener("click", function () {
-        abas.forEach(function (o) {
-          o.setAttribute("aria-selected", String(o === b));
-          document.getElementById(o.dataset.alvo).hidden = (o !== b);
-        });
+    /* Abas do Clube ------------------------------------------------------
+       A troca em si sempre funcionou; o que faltava era (a) o CSS respeitar o
+       `hidden` — resolvido pela regra `[hidden]` lá no topo, sem a qual os três
+       painéis apareciam empilhados — e (b) o teclado. Auditoria A02 e A11. */
+    var abas = Array.prototype.slice.call(document.querySelectorAll(".aba"));
+
+    function mostraAba(b, movoFoco) {
+      abas.forEach(function (o) {
+        var ativa = (o === b);
+        o.setAttribute("aria-selected", String(ativa));
+        /* Tabindex rotativo: o grupo inteiro é UMA parada de Tab, e as setas
+           andam dentro dele. Sem isso o Tab visita as três abas uma a uma. */
+        o.tabIndex = ativa ? 0 : -1;
+        document.getElementById(o.dataset.alvo).hidden = !ativa;
+      });
+      if (movoFoco) b.focus();
+    }
+
+    abas.forEach(function (b, i) {
+      b.addEventListener("click", function () { mostraAba(b, false); });
+      b.addEventListener("keydown", function (e) {
+        var n = null;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") n = (i + 1) % abas.length;
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") n = (i - 1 + abas.length) % abas.length;
+        else if (e.key === "Home") n = 0;
+        else if (e.key === "End") n = abas.length - 1;
+        if (n === null) return;
+        e.preventDefault();          /* senão ArrowDown rola a página junto */
+        mostraAba(abas[n], true);
       });
     });
 
@@ -1613,12 +1696,52 @@
     var eHoje = document.getElementById("hoje"), eInksa = document.getElementById("inksa");
     var eFund = document.getElementById("fund"), eAno = document.getElementById("ano");
     var eTx = document.getElementById("txval"), eNota = document.getElementById("nota");
-    var brl = function (n) { return "R$ " + Math.round(n).toLocaleString("pt-BR"); };
+    /* ⚠️ DINHEIRO AQUI ANDA EM CENTAVOS INTEIROS, NÃO EM REAIS COM VÍRGULA.
+       O parser antigo era `replace(/\D/g, "")` — que apaga a vírgula decimal
+       junto com o "R$" e os pontos de milhar. Digitar 20000,50 virava 2000050:
+       a página mostrava faturamento de R$ 2.000.050 e "economia" de R$ 150.004.
+       Auditoria de 17/10/2026 (A03): o erro não aparece como erro, aparece como
+       um número grande e plausível — que é o pior jeito de uma calculadora de
+       proposta comercial falhar. */
+
+    /* Lê pt-BR de verdade: "20.000,50", "R$ 20.000,50", "20000,5" e "20000".
+       Ponto é separador de MILHAR; vírgula é o decimal. Devolve centavos. */
+    function emCentavos(txt) {
+      var bruto = String(txt == null ? "" : txt);
+      /* Faturamento negativo não existe. Em vez de deixar o `[^\d]` comer o
+         sinal — o que transformaria -100 num R$ 100 convincente — devolve 0. */
+      if (/-/.test(bruto)) return 0;
+      var s = bruto.replace(/[^\d.,]/g, "").replace(/\./g, "");
+      if (!s) return 0;
+      var p = s.split(",");
+      var dec = (p.length > 1 ? p[1] : "").slice(0, 2);
+      while (dec.length < 2) dec += "0";
+      var c = (parseInt(p[0] || "0", 10) || 0) * 100 + (parseInt(dec, 10) || 0);
+      if (!isFinite(c) || c < 0) return 0;
+      return Math.min(c, TETO_CENT);
+    }
+
+    /* Teto de R$ 100 milhões/mês: acima disso o visitante está testando o
+       campo, não simulando. ⚠️ O teto tem que valer no CAMPO também, não só na
+       conta — senão a tela mostra R$ 999.999.999.999 de faturamento ao lado de
+       uma comissão calculada sobre 100 milhões, e os dois números na mesma
+       tela se desmentem. Foi o que meu próprio primeiro conserto fez. */
+    var TETO_CENT = 1e10;
+
+    /* Mostra centavos só quando existem: "R$ 5.000" e "R$ 5.000,13". */
+    var brl = function (cent) {
+      var neg = cent < 0, c = Math.abs(Math.round(cent));
+      var ct = c % 100;
+      return (neg ? "−" : "") + "R$ " + Math.floor(c / 100).toLocaleString("pt-BR") +
+             (ct ? "," + (ct < 10 ? "0" : "") + ct : "");
+    };
 
     function calcula() {
-      var v = parseInt((fat.value || "").replace(/\D/g, ""), 10) || 0;
+      var v = emCentavos(fat.value);           /* centavos */
       var t = parseInt(tx.value, 10);
-      var hoje = v * t / 100, normal = v * 0.15, fund = v * 0.075;
+      var hoje = Math.round(v * t / 100),
+          normal = Math.round(v * 15 / 100),
+          fund = Math.round(v * 75 / 1000);
       eTx.textContent = t + "%";
       eHoje.textContent = brl(hoje);
       eInksa.textContent = brl(normal);
@@ -1627,7 +1750,7 @@
       /* SEIS meses, não doze: o benefício de Fundador dura meio ano. Projetar
          12 aqui inflaria a economia em 100% — número bonito que a pessoa
          descobre errado no sétimo mês. */
-      eAno.textContent = (dif >= 0 ? "" : "−") + brl(Math.abs(dif) * 6);
+      eAno.textContent = brl(dif * 6);        /* o brl já põe o sinal */
       if (dif > 0 && hoje > 0) {
         eNota.textContent = "Equivale a " + (dif * 6 / hoje).toFixed(1).replace(".", ",") +
                             " meses do que você paga hoje.";
@@ -1637,12 +1760,26 @@
         /* Honestidade: se a comissão dele já é menor que a nossa, a página não
            finge que economiza. Mentir aqui destrói a única coisa que a
            calculadora existe pra construir. */
-        eNota.textContent = "Nesse caso a Inksa sai mais cara em comissão — e a gente prefere que você saiba disso aqui do que descubra depois.";
+        eNota.textContent = "Nesse caso a Inksa sai mais cara em comissão — e a gente prefere que você saiba disso aqui do que descubra depois. Vale comparar com o que você paga de mensalidade: aqui não tem.";
       }
     }
+    /* A máscara formata o MILHAR e deixa a vírgula em paz. Ela não pode chamar
+       `emCentavos` e reescrever o campo a partir do resultado: isso completaria
+       os centavos sozinho e, no instante em que a pessoa digita a vírgula, o
+       campo saltaria de "20.000," para "20.000,00" e comeria a próxima tecla. */
     function mascara() {
-      var n = (fat.value || "").replace(/\D/g, "");
-      fat.value = n ? parseInt(n, 10).toLocaleString("pt-BR") : "";
+      var bruto = String(fat.value || "");
+      if (/-/.test(bruto)) { fat.value = ""; calcula(); return; }
+      var s = bruto.replace(/[^\d,]/g, "");
+      var p = s.split(",");
+      var inteiro = (p[0] || "").replace(/^0+(?=\d)/, "");
+      var temVirgula = p.length > 1;
+      var dec = temVirgula ? p[1].slice(0, 2) : "";
+      var n = inteiro ? parseInt(inteiro, 10) : null;
+      if (n !== null && n > TETO_CENT / 100) { n = TETO_CENT / 100; dec = ""; temVirgula = false; }
+      var saida = n !== null ? n.toLocaleString("pt-BR") : (temVirgula ? "0" : "");
+      if (temVirgula) saida += "," + dec;
+      fat.value = saida;
       calcula();
     }
     if (fat && tx) { fat.addEventListener("input", mascara); tx.addEventListener("input", calcula); calcula(); }

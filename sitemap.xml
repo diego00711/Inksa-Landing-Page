@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Inksa Delivery — mapa do site institucional. Criado em 17/10/2026; antes
+  /sitemap.xml respondia 404 (auditoria A13).
+
+  ⚠️ Só entram URLs que EXISTEM e são canônicas. Sem rota de sessão, sem
+  carrinho, sem página privada e sem os atalhos de redirecionamento
+  (/pedir, /app, /loja, /moto...) — redirecionamento não é página.
+
+  O host é `www`, igual ao CNAME e ao <link rel="canonical"> da home. Listar a
+  versão sem www criaria duas URLs para a mesma página.
+
+  As datas são a última alteração real de cada arquivo. Ao editar uma página,
+  atualize a linha dela aqui — data mentirosa ensina o buscador a ignorar o
+  campo.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/</loc>
+    <lastmod>2026-10-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/api</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/dia-i</loc>
+    <lastmod>2026-07-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/impostos</loc>
+    <lastmod>2026-09-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/regulamento</loc>
+    <lastmod>2026-10-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/termos</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/privacidade</loc>
+    <lastmod>2026-07-09</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/excluir-conta</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://www.inksadelivery.com.br/excluir-dados</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

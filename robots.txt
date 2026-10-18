@@ -1,0 +1,28 @@
+# Inksa Delivery — www.inksadelivery.com.br
+#
+# Criado em 17/10/2026. Antes disso /robots.txt respondia 404 (auditoria A13).
+#
+# ⚠️ Isto NÃO é controle de acesso. Robots.txt é um pedido educado que
+# buscador honesto respeita e raspador ignora — o que precisa ficar privado
+# se protege com autenticação, não com uma linha aqui.
+#
+# Os apps moram em outros subdomínios (clientes./restaurante./entregadores.)
+# e cada um responde pelo próprio robots. Este arquivo cobre só o site
+# institucional.
+
+User-agent: *
+Allow: /
+
+# Atalhos que só redirecionam pra fora. Não são página, não têm conteúdo
+# próprio e não devem disputar indexação com o destino.
+Disallow: /pedir
+Disallow: /app
+Disallow: /cliente
+Disallow: /loja
+Disallow: /parceiro
+Disallow: /restaurante
+Disallow: /moto
+Disallow: /entregar
+Disallow: /entregador
+
+Sitemap: https://www.inksadelivery.com.br/sitemap.xml
