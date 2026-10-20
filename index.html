@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Inksa Delivery — o delivery que fica na cidade. Comissão de 15%, repasse semanal e a conta de cada pedido aberta. Começamos em Lages, SC.">
+<meta name="description" content="A comida da sua cidade, na sua porta. Lanche, açaí e doce das lojas de Lages, entregues por gente daqui — com a conta de cada pedido aberta.">
 <meta property="og:title" content="Inksa Delivery — o delivery que fica na cidade">
-<meta property="og:description" content="Aqui o dinheiro não pega a estrada. Comissão de 15%, repasse toda sexta e a conta de cada pedido aberta.">
+<meta property="og:description" content="A comida da sua cidade, na sua porta. Lojas de Lages, entregadores daqui e a conta de cada pedido aberta.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.inksadelivery.com.br/">
 <meta property="og:locale" content="pt_BR">
@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://www.inksadelivery.com.br/assets/og-inksa.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Inksa Delivery — Aqui o dinheiro não pega a estrada.">
+<meta property="og:image:alt" content="Inksa Delivery — A comida da sua cidade, na sua porta.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F97316">
 <link rel="canonical" href="https://www.inksadelivery.com.br/">
@@ -64,16 +64,26 @@
     --mono:    "IBM Plex Mono", ui-monospace, Consolas, monospace;
     --max: 72rem;
   }
+  /* ⚠️ OS TRÊS FUNDOS ESCUROS PRECISAM DE DEGRAU VISÍVEL ENTRE SI.
+     Até 20/10/2026 eram #0E1519 / #131F26 / #17252D — luminosidade percebida
+     7,5 / 10,8 / 13,1. Três pontos de L* não se enxergam: as seções alternadas
+     davam no mesmo e a página inteira lia como UMA chapa preta. (Foi a queixa
+     do Diego: "o preto está meio forte".)
+     Agora o degrau é de ~5 pontos e a base subiu um pouco, pra deixar de
+     esmagar. Mesma família fria de ardósia — o que mudou foi o CONTRASTE
+     INTERNO, não a identidade.
+     📌 Os dois blocos abaixo têm que andar juntos: o primeiro atende quem está
+     no escuro do sistema, o segundo quem escolheu escuro no botão. */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --fundo: #0E1519; --fundo-2: #131F26; --fundo-3: #17252D;
+      --fundo: #131C22; --fundo-2: #1D2931; --fundo-3: #27353E;
       --tinta: #E8EDF0; --musgo: #90A5AF; --linha: rgba(144,165,175,.2);
       --brasa: #FF7A3D; --brasa-texto: #FF9A68; --brasa-esc: #FF9A68;
       --brasa-veu: #2A150C;
     }
   }
   :root[data-theme="dark"] {
-    --fundo: #0E1519; --fundo-2: #131F26; --fundo-3: #17252D;
+    --fundo: #131C22; --fundo-2: #1D2931; --fundo-3: #27353E;
     --tinta: #E8EDF0; --musgo: #90A5AF; --linha: rgba(144,165,175,.2);
     --brasa: #FF7A3D; --brasa-texto: #FF9A68; --brasa-esc: #FF9A68;
       --brasa-veu: #2A150C;
@@ -274,6 +284,38 @@
   .cartao p { font-size: .94rem; color: var(--musgo); margin-top: .45rem; }
   .cartao .ico { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
                  color: var(--brasa-texto); display: block; margin-bottom: .5rem; }
+
+  /* ⚠️ NO ESCURO, SUPERFÍCIE ELEVADA TEM QUE SER MAIS CLARA QUE A SEÇÃO.
+     As regras acima usam `--fundo` no cartão. No tema claro isso funciona
+     (branco sobre cinza = o cartão salta). No escuro inverte: dentro de uma
+     seção `.cinza` (que é `--fundo-2`) o cartão com `--fundo` fica MAIS ESCURO
+     que o fundo dela, e afunda em vez de levantar.
+     Aqui cada superfície sobe um degrau. Vale pro cartão, pro nível do clube,
+     pela aba e pela calculadora — todos usavam `--fundo` cru. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .cartao,
+    :root:not([data-theme="light"]) .nivel,
+    :root:not([data-theme="light"]) .aba,
+    :root:not([data-theme="light"]) .calc,
+    :root:not([data-theme="light"]) .perfil { background: var(--fundo-2); }
+    :root:not([data-theme="light"]) .cinza .cartao,
+    :root:not([data-theme="light"]) .cinza .nivel,
+    :root:not([data-theme="light"]) .cinza .aba,
+    :root:not([data-theme="light"]) .cinza .calc,
+    :root:not([data-theme="light"]) .cinza .perfil { background: var(--fundo-3); }
+    :root:not([data-theme="light"]) .aba[aria-selected="true"] { background: var(--brasa); }
+  }
+  :root[data-theme="dark"] .cartao,
+  :root[data-theme="dark"] .nivel,
+  :root[data-theme="dark"] .aba,
+  :root[data-theme="dark"] .calc,
+  :root[data-theme="dark"] .perfil { background: var(--fundo-2); }
+  :root[data-theme="dark"] .cinza .cartao,
+  :root[data-theme="dark"] .cinza .nivel,
+  :root[data-theme="dark"] .cinza .aba,
+  :root[data-theme="dark"] .cinza .calc,
+  :root[data-theme="dark"] .cinza .perfil { background: var(--fundo-3); }
+  :root[data-theme="dark"] .aba[aria-selected="true"] { background: var(--brasa); }
 
   /* ── clube ────────────────────────────────────────────────────────────── */
   .abas { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: 2rem; }
@@ -673,15 +715,31 @@
   <div class="conteudo dentro">
     <img class="heroi-logo" src="/assets/inksa-marca.png" alt="Inksa Delivery" width="365" height="224" decoding="async">
     <span class="lema">O delivery que fica na cidade</span>
-    <h1>Aqui o dinheiro<br>não pega <em>a estrada</em>.</h1>
+    <!-- ⚠️ O HERÓI FALA COM QUEM VAI PEDIR, e isso é decisão do Diego (20/10/2026).
+         Antes era "Aqui o dinheiro não pega a estrada" — um argumento de
+         economia local, defendido CONTRA o concorrente. Funcionava pra parceiro
+         e não dizia nada pra quem está com fome, que é quem chega aqui pelo
+         Instagram. Parceiro e entregador continuam a um clique, no botão
+         secundário e na seção "Escolha o seu lado" logo abaixo.
+
+         ⚠️ NÃO prometa desconto como se fosse da plataforma. Os cupons são das
+         LOJAS (hoje: BEM VINDO 10 da Mister, vence 30/10; SEJABEMVINDO da Me
+         Mimei, sem prazo). "Tem loja com desconto" continua verdade com uma
+         só — "primeiro pedido com desconto" vira mentira no dia em que a
+         última vencer. Ver inksa-promessa-sem-perguntar-se-ligado. -->
+    <h1>A comida da sua cidade,<br><em>na sua porta</em>.</h1>
     <p class="grande" style="margin-top:1.4rem">
-      Começamos em Lages porque é a nossa cidade. Mas a conta que a gente fez
-      serve para qualquer cidade do Brasil onde um negócio pequeno entrega
-      uma fatia grande demais para uma plataforma de fora.
+      Lanche, açaí e doce das lojas de Lages, entregues por gente daqui. Tem
+      loja com desconto de boas-vindas no primeiro pedido — e a conta de cada
+      pedido fica aberta, pra você ver para onde vai cada real.
     </p>
     <div class="botoes">
-      <a class="btn btn-cheio" href="#perfis">Começar agora</a>
-      <a class="btn btn-vazio" href="#conta" style="border-color:#fff;color:#fff">Ver nossa conta aberta</a>
+      <!-- ⚠️ NÃO usar /pedir aqui: aquele atalho carrega `?de=tiktok`, que é a
+           etiqueta da bio do TikTok. Apontar o site pra lá faria todo clique
+           daqui aparecer como TikTok no painel /campanhas. Etiqueta própria =
+           dá pra saber quanto o SITE traz. Ver inksa-origem-campanha. -->
+      <a class="btn btn-cheio" href="https://clientes.inksadelivery.com.br/?de=site">Pedir agora</a>
+      <a class="btn btn-vazio" href="#perfis" style="border-color:#fff;color:#fff">Sou loja ou entregador</a>
     </div>
     <!-- Muita gente não instala aplicativo de loja que ainda não conhece, e
          essa desconfiança é justa. Sem esta saída, quem chega pelo site e não
@@ -785,7 +843,7 @@
     <p class="apagado revela" id="lojas-cidades" style="margin-top:1.2rem;max-width:52ch"></p>
     <div class="lojas revela" id="lojas-grade"></div>
     <div class="botoes revela" style="margin-top:2.2rem">
-      <a class="btn btn-cheio" href="https://clientes.inksadelivery.com.br">Ver o cardápio da cidade</a>
+      <a class="btn btn-cheio" href="https://clientes.inksadelivery.com.br/?de=site-lojas">Ver o cardápio da cidade</a>
     </div>
   </div>
 </section>
