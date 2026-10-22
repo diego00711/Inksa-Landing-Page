@@ -6,6 +6,9 @@
     { "source": "/app", "destination": "https://clientes.inksadelivery.com.br/?de=bio", "permanent": false },
     { "source": "/cliente", "destination": "https://clientes.inksadelivery.com.br", "permanent": false },
 
+    { "source": "/lages", "destination": "https://clientes.inksadelivery.com.br/?de=lages", "permanent": false },
+    { "source": "/fraiburgo", "destination": "https://clientes.inksadelivery.com.br/?de=fraiburgo", "permanent": false },
+
     { "source": "/loja", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
     { "source": "/parceiro", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
     { "source": "/restaurante", "destination": "https://restaurante.inksadelivery.com.br", "permanent": false },
